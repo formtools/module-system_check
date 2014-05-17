@@ -128,7 +128,7 @@ function sc_find_table_orphans($table_name, $remove_orphans)
     $results["num_orphans"] = $response["num_orphans"];
     $results["test_descriptions"] = $response["test_descriptions"];
     $results["problems"] = $response["problems"];
-    $results["clean_up_problems"] = $response["clean_up_problems"];
+    $results["clean_up_problems"] = isset($response["clean_up_problems"]) ? $response["clean_up_problems"] : "";
   }
 
   return $results;

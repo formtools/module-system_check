@@ -7,8 +7,8 @@
 $MODULE["author"]          = "Encore Web Studios";
 $MODULE["author_email"]    = "formtools@encorewebstudios.com";
 $MODULE["author_link"]     = "http://www.encorewebstudios.com";
-$MODULE["version"]         = "1.0.2";
-$MODULE["date"]            = "2011-12-07";
+$MODULE["version"]         = "1.0.3";
+$MODULE["date"]            = "2012-03-05";
 $MODULE["origin_language"] = "en_us";
 
 // define the module navigation - the keys are keys defined in the language file. This lets
@@ -20,5 +20,6 @@ $MODULE["nav"] = array(
   "phrase_table_verification"     => array('{$module_dir}/tables.php', true),
   "phrase_hook_verification"      => array('{$module_dir}/hooks.php', true),
   "phrase_orphan_clean_up"        => array('{$module_dir}/orphans.php', true),
+  "phrase_environment_info"       => array('{$module_dir}/env.php', false),
   "word_help"                     => array('{$module_dir}/help.php', false)
 );

@@ -11,6 +11,9 @@ $L["word_component"] = "Component";
 $L["word_passed"] = "Passed";
 $L["word_failed"] = "Failed";
 $L["word_result"] = "Result";
+$L["word_summary"] = "Summary";
+$L["word_installed"] = "Installed";
+$L["word_available"] = "Available";
 
 $L["phrase_missing_table_c"] = "missing table: ";
 $L["phrase_missing_column_c"] = "missing column: ";
@@ -29,6 +32,14 @@ $L["phrase_has_tables_q"] = "Has Tables?";
 $L["phrase_orphan_clean_up"] = "Orphan Clean-up";
 $L["phrase_run_test"] = "Run Test";
 $L["phrase_form_integrity_check"] = "Form Integrity Check";
+$L["phrase_environment_info"] = "Environment Info";
+$L["phrase_not_installed"] = "Not Installed";
+$L["phrase_not_available"] = "Not Available";
+$L["phrase_environment_overview"] = "Environment Overview";
+$L["phrase_php_sessions"] = "PHP Sessions";
+$L["phrase_suhosin_extension"] = "Suhosin Extension";
+$L["phrase_curl_extension"] = "Curl Extension";
+$L["phrase_simplexml_extension"] = "SimpleXML Extension";
 
 $L["text_tables_test"] = "The following tables will be tested to confirm they exist, and that the column information is valid.";
 $L["text_module_intro"] = "This module lets you run tests on your Form Tools installation to look for potential problems. Choose one of the tests below.";
@@ -41,6 +52,7 @@ $L["text_file_check"] = "This examines all compatible components (Core, modules 
 $L["text_file_verification_intro"] = "This checks over your Core, modules and themes to confirm that all the necessary files have been uploaded properly. If any are missing, you will need to re-download the appropriate component and upload them to your server.";
 $L["text_orphan_record_check_intro"] = "This is a house-keeping test to examine the Core database tables for any unwanted orphaned records and references. Orphaned records are database entries that are no longer needed and should have been deleted along with their \"parents\". For example, when you delete a form, any references to that form ID should also be deleted. Orphaned records shouldn't cause problems, but add unnecessary clutter to your database. <b>If this test finds anything, we'd appreciate it if you <a href=\"http://forums.formtools.org/\">report them in the forums</a>!</b>";
 $L["text_orphan_desc_short"] = "A housekeeping test to identify and remove old database records and references that are no longer needed and should have been deleted.";
+$L["text_environment_overview_summary"] = "This section below contains a report of key information about your Form Tools installation and environment, which can be helpful when reporting bugs.";
 
 $L["notify_test_complete_problems"] = "The test is complete. We found a problem with one or more of your installed components.";
 $L["notify_test_complete_no_problems"] = "The test is complete. No problems were found.";
