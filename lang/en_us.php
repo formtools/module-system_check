@@ -31,7 +31,7 @@ $L["phrase_run_test"] = "Run Test";
 $L["phrase_form_integrity_check"] = "Form Integrity Check";
 
 $L["text_tables_test"] = "The following tables will be tested to confirm they exist, and that the column information is valid.";
-$L["text_module_intro"] = "This module lets you run tests on your Form Tools installation to look for potential problems. Choose one of the tests below, or click the Run All Tests button.";
+$L["text_module_intro"] = "This module lets you run tests on your Form Tools installation to look for potential problems. Choose one of the tests below.";
 $L["text_table_verification_intro"] = "This examines and verifies the existence and structure of your Core database tables and any compatible modules.";
 $L["text_hook_verification_intro"] = "Modules interact with the Core script through <i>hooks</i>. They attach their own functionality to act at particular junctions in the code. If this gets corrupted, it can prevent the module from working properly. This test examines your database to confirm that the hooks for all your modules are configured properly.";
 $L["text_problems_identified_and_fixed"] = "Problems are both identified and fixed.";
