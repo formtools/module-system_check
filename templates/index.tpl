@@ -29,8 +29,12 @@
     <td>{$L.text_table_verification_intro} {$L.text_problems_identified_not_fixed}</td>
   </tr>
   <tr>
-    <td valign="top" class="rowN"><a href="hooks.php">{$L.phrase_hook_verification}</a></td>
-    <td class="rowN">{$L.text_hook_verification_intro} {$L.text_problems_identified_and_fixed}</td>
+    <td valign="top"><a href="hooks.php">{$L.phrase_hook_verification}</a></td>
+    <td>{$L.text_hook_verification_intro} {$L.text_problems_identified_and_fixed}</td>
+  </tr>
+  <tr>
+    <td valign="top" class="rowN"><a href="orphans.php">{$L.phrase_orphan_clean_up}</a></td>
+    <td>{$L.text_orphan_desc_short} {$L.text_problems_identified_and_fixed}</td>
   </tr>
   </table>
 

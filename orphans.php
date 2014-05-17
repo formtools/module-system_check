@@ -3,15 +3,10 @@
 require_once("../../global/library.php");
 ft_init_module_page();
 
-if (isset($_GET["repair"]))
+if (isset($_GET["clean"]))
 {
-	$module_ids = explode(",", $_GET["repair"]);
-  list($g_success, $g_message) = sc_reset_module_hook_calls($module_ids);
+	list($g_success, $g_message) = sc_clean_orphans();
 }
-
-// example
-//sc_generate_module_hook_array("module_hooks_manager_rules", "1.1.4");
-//exit;
 
 $word_testing_uc = mb_strtoupper($L["word_untested"]);
 $word_passed_uc  = mb_strtoupper($L["word_passed"]);
@@ -20,7 +15,6 @@ $notify_hook_verification_complete_problems = ft_sanitize($L["notify_hook_verifi
 
 $page_vars = array();
 $page_vars["module_list"] = sc_get_compatible_modules("hooks");
-//print_r($page_vars["module_list"]);
 
 $page_vars["head_string"] =<<< EOF
 <script src="{$g_root_url}/modules/system_check/global/scripts/tests.js"></script>
@@ -51,4 +45,4 @@ $(function() {
 </script>
 EOF;
 
-ft_display_module_page("templates/hooks.tpl", $page_vars);
+ft_display_module_page("templates/orphans.tpl", $page_vars);

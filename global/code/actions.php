@@ -77,7 +77,7 @@ switch ($action)
   case "verify_component_files":
   	$component = $request["component"];
 
-  	$return_info = array("result" => "pass");
+  	$return_info = array("result" => "pass", "bah" => "stupid");
   	if ($component == "core")
   	{
       $missing_files = sc_check_core_files();
@@ -107,6 +107,12 @@ switch ($action)
     	$return_info["missing_files"] = $missing_files;
     }
     echo ft_convert_to_json($return_info);
+  	break;
+
+  case "find_table_orphans":
+  	$remove_orphans = isset($request["remove_orphans"]) ? true : false;
+    $results = sc_find_table_orphans($request["table_name"], $remove_orphans);
+    echo ft_convert_to_json($results);
   	break;
 }
 

@@ -127,3 +127,205 @@ function sc_get_module_config_file_contents($module_folder)
   return $return_info;
 }
 
+
+/** -------------- HELPERS: TODO Move these to Core and add wrapper function here.  ------------------ */
+
+/**
+ * Returns an array of valid account IDs. Used in the orphan record testing.
+ *
+ * @return array
+ */
+function sc_get_account_ids()
+{
+	global $g_table_prefix;
+
+  $accounts_query = mysql_query("SELECT account_id FROM {$g_table_prefix}accounts");
+  $valid_account_ids = array();
+  while ($row = mysql_fetch_assoc($accounts_query))
+  {
+    $valid_account_ids[] = $row["account_id"];
+  }
+
+  return $valid_account_ids;
+}
+
+
+/**
+ * Returns an array of valid form IDs. Used in the orphan record testing.
+ *
+ * @return array
+ */
+function sc_get_form_ids()
+{
+  global $g_table_prefix;
+
+  $query = mysql_query("SELECT form_id FROM {$g_table_prefix}forms");
+  $valid_form_ids = array();
+  while ($row = mysql_fetch_assoc($query))
+  {
+    $valid_form_ids[] = $row["form_id"];
+  }
+
+  return $valid_form_ids;
+}
+
+
+/**
+ * Returns an array of valid View IDs. Used in the orphan record testing.
+ *
+ * @return array
+ */
+function sc_get_view_ids()
+{
+  global $g_table_prefix;
+
+  $query = mysql_query("SELECT view_id FROM {$g_table_prefix}views");
+  $valid_view_ids = array();
+  while ($row = mysql_fetch_assoc($query))
+  {
+    $valid_view_ids[] = $row["view_id"];
+  }
+
+  return $valid_view_ids;
+}
+
+
+/**
+ * Returns an array of valid View IDs. Used in the orphan record testing.
+ *
+ * @return array
+ */
+function sc_get_email_ids()
+{
+  global $g_table_prefix;
+
+  $query = mysql_query("SELECT email_id FROM {$g_table_prefix}email_templates");
+  $valid_email_ids = array();
+  while ($row = mysql_fetch_assoc($query))
+  {
+    $valid_email_ids[] = $row["email_id"];
+  }
+
+  return $valid_email_ids;
+}
+
+
+/**
+ * Returns an array of valid View IDs. Used in the orphan record testing.
+ *
+ * @return array
+ */
+function sc_get_form_email_config_ids()
+{
+  global $g_table_prefix;
+
+  $query = mysql_query("SELECT form_email_id FROM {$g_table_prefix}form_email_fields");
+  $valid_email_ids = array();
+  while ($row = mysql_fetch_assoc($query))
+  {
+    $valid_email_ids[] = $row["form_email_id"];
+  }
+
+  return $valid_email_ids;
+}
+
+
+function sc_get_list_group_ids()
+{
+  global $g_table_prefix;
+
+  $query = mysql_query("SELECT group_id FROM {$g_table_prefix}list_groups");
+  $valid_list_group_ids = array();
+  while ($row = mysql_fetch_assoc($query))
+  {
+    $valid_list_group_ids[] = $row["group_id"];
+  }
+
+  return $valid_list_group_ids;
+}
+
+
+function sc_get_field_ids()
+{
+  global $g_table_prefix;
+
+  $query = mysql_query("SELECT field_id FROM {$g_table_prefix}form_fields");
+  $valid_field_ids = array();
+  while ($row = mysql_fetch_assoc($query))
+  {
+    $valid_field_ids[] = $row["field_id"];
+  }
+
+  return $valid_field_ids;
+}
+
+
+function sc_get_field_type_ids()
+{
+  global $g_table_prefix;
+
+  $query = mysql_query("SELECT field_type_id FROM {$g_table_prefix}field_types");
+  $valid_field_type_ids = array();
+  while ($row = mysql_fetch_assoc($query))
+  {
+    $valid_field_type_ids[] = $row["field_type_id"];
+  }
+
+  return $valid_field_type_ids;
+}
+
+
+function sc_get_field_type_setting_ids()
+{
+  global $g_table_prefix;
+
+  $query = mysql_query("SELECT setting_id FROM {$g_table_prefix}field_type_settings");
+  $valid_field_type_setting_ids = array();
+  while ($row = mysql_fetch_assoc($query))
+  {
+    $valid_field_type_setting_ids[] = $row["setting_id"];
+  }
+
+  return $valid_field_type_setting_ids;
+}
+
+
+function sc_get_validation_rule_ids()
+{
+  global $g_table_prefix;
+
+  $query = mysql_query("SELECT rule_id FROM {$g_table_prefix}field_type_validation_rules");
+  $valid_validation_rule_ids = array();
+  while ($row = mysql_fetch_assoc($query))
+  {
+    $valid_validation_rule_ids[] = $row["rule_id"];
+  }
+
+  return $valid_validation_rule_ids;
+}
+
+
+function sc_get_form_field_ids($form_id)
+{
+  $form_fields = ft_get_form_fields($form_id);
+  $field_ids = array();
+  foreach ($form_fields as $field_info)
+  {
+  	$field_ids[] = $field_info["field_id"];
+  }
+
+  return $field_ids;
+}
+
+
+function sc_get_menu_ids()
+{
+  $menus = ft_get_menu_list();
+  $valid_menu_ids = array();
+  foreach ($menus as $menu_info)
+  {
+    $valid_menu_ids[] = $menu_info["menu_id"];
+  }
+
+  return $valid_menu_ids;
+}
