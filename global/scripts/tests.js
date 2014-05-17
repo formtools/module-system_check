@@ -1,10 +1,12 @@
 /**
- * This file contains all the client-side code for all tests in the module.
+ * This file contains all the client-side code for the three tests: file, table and hook verification. It's arranged
+ * into general functions first, then test-specific functions below, grouped under the appropriate heading.
+ *
  */
 
 var sc_ns = {
 
-  // common vars (used for all, or most tests)
+  // common vars (used for all tests)
   is_processing: false, // any time a test is running
   component_list: [],   // contains "core" and/or any module IDs, depending on what's selected for the test
   current_component: null, // core / module ID
@@ -12,21 +14,17 @@ var sc_ns = {
 
 
   /**
-   * This initiates the test process for any of the tests, called from the individual test pages. It
-   * does the following:
-   *
+   * This initiates the test process for any of the 3 tests. This does the following:
    * 1. Clears the logs already outputted
    * 2. marks the test as having begun (is_processing = true)
    * 3. stores the list of components (module IDs + core) that the user selected
-   * 4. Calls the appropriate init test function
+   * 4. Calls the
    */
   start: function(start_test_func) {
     sc_ns.clear_logs();
     sc_ns.is_processing = true;
     sc_ns.component_list = [];
     sc_ns.file_verification_problems = null;
-    sc_ns.total_orphan_tests_run = 0;
-    sc_ns.total_num_orphans_found = 0;
 
     $(".components:checked").each(function() {
       sc_ns.component_list.push(this.value);
@@ -343,114 +341,6 @@ var sc_ns = {
       } else {
         ft.display_message("ft_message", 1, g.messages["notify_test_complete_no_problems"]);
       }
-      return;
-    }
-  },
-
-
-  // ----------------------------------------------------------------------------------------------
-
-  // Orphan Record Check
-
-  total_orphan_tests_run: 0,
-  total_num_orphans_found: 0,
-
-  /**
-   * Called for each component on the Table Verification page. This method returns all tables
-   * for the component, which are passed to sc_ns.verify_component_tables which does the actual
-   * verification.
-   */
-  init_orphan_record_test: function() {
-    $("#result__" + sc_ns.current_component).html("<img src=\"images/loading.gif\" />");
-    $.ajax({
-      url:      g.root_url + "/modules/system_check/global/code/actions.php",
-      data:     { action: "get_component_tables", component: "core" },
-      type:     "POST",
-      dataType: "json",
-      success:  sc_ns.find_orphan_records
-    });
-  },
-
-  find_orphan_records: function(core_info) {
-    sc_ns.current_component_name   = core_info.tables.shift();
-    sc_ns.current_component        = core_info.tables.shift();
-    sc_ns.current_component_tables = core_info.tables;
-    sc_ns.current_component_table  = core_info.tables[0];
-
-    // update the log section
-    var log = g.messages["word_testing_c"] + sc_ns.current_component_name + "\n"
-            + "------------------------------------------\n";
-
-    // if this isn't the first thing outputted to the log, add some visual padding
-    if ($("#full_log").val() != "")
-      log = "\n\n" + log;
-
-    sc_ns.log_message(log);
-
-    // now start processing this component's tables
-    sc_ns.find_next_table_orphans();
-  },
-
-  find_next_table_orphans: function() {
-    $.ajax({
-      url:      g.root_url + "/modules/system_check/global/code/actions.php",
-      data:     { action: "find_table_orphans", table_name: sc_ns.current_component_table },
-      type:     "POST",
-      dataType: "json",
-      success:  sc_ns.display_orphan_test_results
-    });
-  },
-
-  display_orphan_test_results: function(results) {
-    var log = "TABLE: " + results.table_name + "\n";
-    if (results.has_test) {
-      log += "Test description:\n" + results.test_descriptions + "\n"
-           + "Results:\n"
-           + "- num tests: " + results.num_tests + "\n"
-           + "- num orphans: " + results.num_orphans;
-
-      sc_ns.total_orphan_tests_run += results.num_tests;
-      sc_ns.total_num_orphans_found += results.num_orphans;
-    } else {
-      log += "- No test";
-    }
-    sc_ns.log_message(log);
-    sc_ns.log_message("_______________________\n");
-
-    if (results.num_orphans > 0) {
-      var log = "TABLE: " + results.table_name + "\n"
-              + "- num orphans: " + results.num_orphans + "\n"
-              + "- error description: \n";
-      for (var i=1; i<=results.problems.length; i++) {
-        log += i + ". " + results.problems[i-1] + "\n";
-      }
-      sc_ns.log_error(log + "_______________________\n");
-    }
-
-    var next_table = null;
-    for (var i=0; i<sc_ns.current_component_tables.length-1; i++) {
-      if (sc_ns.current_component_tables[i] == sc_ns.current_component_table) {
-        next_table = sc_ns.current_component_tables[i+1];
-        break;
-      }
-    }
-
-    if (next_table != null) {
-      sc_ns.current_component_table = next_table;
-      sc_ns.find_next_table_orphans();
-    } else {
-      var message = "Number of tests run: <b>" + sc_ns.total_orphan_tests_run + "</b>, "
-        + "total number of orphans found: <b>" + sc_ns.total_num_orphans_found + "</b>";
-
-      var error_type = 1;
-      if (sc_ns.total_num_orphans_found > 0) {
-        error_type = 0;
-        message += ". <a href=\"orphans.php?clean\">Click here</a> to delete all the orphaned records / references.";
-      } else {
-        message += ". Passed!";
-      }
-
-      ft.display_message("ft_message", error_type, message);
       return;
     }
   }

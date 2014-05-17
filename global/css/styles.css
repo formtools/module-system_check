@@ -13,14 +13,12 @@ table.log_table .full_log_heading {
 	color: white;
 	font-weight: bold;
 	font-size: 8pt;
-	padding-left: 3px;
 }
 table.log_table .error_log_heading {
 	background-color: #990000;
 	color: white;
 	font-weight: bold;
 	font-size: 8pt;
-	padding-left: 3px;
 }
 table.log_table td {
 	background-color: #efefef;

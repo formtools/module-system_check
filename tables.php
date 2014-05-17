@@ -48,10 +48,8 @@ $core_version = ($settings["release_type"] == "beta") ? "{$settings["program_ver
   "views"
 );
 */
-$tables = array("module_hooks_manager_rules");
-//echo sc_generate_db_config_file($tables, "module");
+//echo sc_generate_db_config_file($tables, "core", "2.1.0");
 //exit;
-
 // ---------------------------------------
 
 // example for the core
