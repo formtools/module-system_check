@@ -114,6 +114,11 @@ switch ($action)
     $results = sc_find_table_orphans($request["table_name"], $remove_orphans);
     echo ft_convert_to_json($results);
   	break;
+
+  case "test_pdo_connection":
+    include_once("pdo.php");
+    echo ft_convert_to_json(sc_check_pdo_connection($request["port"]));
+    break;
 }
 
 

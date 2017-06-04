@@ -21,6 +21,10 @@
 
   <table cellspacing="0" class="index_link_table">
   <tr>
+      <td valign="top" width="160"><a href="ft3.php">{$L.phrase_formtools3_compatibility}</a></td>
+      <td>{$L.text_ft3_compatibility}</td>
+  </tr>
+  <tr>
     <td valign="top" width="160"><a href="files.php">{$L.phrase_file_verification}</a></td>
     <td>{$L.text_file_check} {$L.text_problems_identified_not_fixed}</td>
   </tr>

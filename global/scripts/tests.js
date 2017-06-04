@@ -453,6 +453,37 @@ var sc_ns = {
       ft.display_message("ft_message", error_type, message);
       return;
     }
+  },
+
+  test_pdo_connection: function () {
+    var port = $("#pdo_port").val();
+
+    $("#pdo_test_loading").html("<img src=\"images/loading.gif\" />");
+    $("#pdo_test_btn").attr("disabled", true);
+    $(".pdo_result").addClass("hidden");
+
+    $.ajax({
+      url:      g.root_url + "/modules/system_check/global/code/actions.php",
+      data:     { action: "test_pdo_connection", port: port },
+      type:     "POST",
+      dataType: "json",
+      success:  function(result) {
+        $("#pdo_test_loading").html("");
+        $("#pdo_test_btn").removeAttr("disabled");
+
+        if (result.success) {
+          if (result.port == 3306) {
+            $("#pdo_result_success").removeClass("hidden");
+          } else {
+            $("#custom_port").html(result.port);
+            $("#pdo_result_success_with_port").removeClass("hidden");
+          }
+        } else {
+          $("#pdo_result_error").removeClass("hidden");
+          $("#pdo_result_error_msg").html(result.msg);
+        }
+      }
+    })
   }
 
 };

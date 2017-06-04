@@ -5,6 +5,7 @@ $L["module_name"] = "System Check";
 $L["module_description"] = "This replaces the older Database Integrity module. It offers various tests to analyze and repair your Form Tools installation.";
 
 $L["word_untested"] = "Untested";
+$L["word_test"] = "Test";
 $L["word_testing_c"] = "Testing: ";
 $L["word_help"] = "Help";
 $L["word_component"] = "Component";
@@ -40,6 +41,8 @@ $L["phrase_php_sessions"] = "PHP Sessions";
 $L["phrase_suhosin_extension"] = "Suhosin Extension";
 $L["phrase_curl_extension"] = "Curl Extension";
 $L["phrase_simplexml_extension"] = "SimpleXML Extension";
+$L["phrase_ft3_compatibility"] = "FT3 compatibility";
+$L["phrase_formtools3_compatibility"] = "Form Tools 3 compatibility";
 
 $L["text_tables_test"] = "The following tables will be tested to confirm they exist, and that the column information is valid.";
 $L["text_module_intro"] = "This module lets you run tests on your Form Tools installation to look for potential problems. Choose one of the tests below.";
@@ -53,6 +56,7 @@ $L["text_file_verification_intro"] = "This checks over your Core, modules and th
 $L["text_orphan_record_check_intro"] = "This is a house-keeping test to examine the Core database tables for any unwanted orphaned records and references. Orphaned records are database entries that are no longer needed and should have been deleted along with their \"parents\". For example, when you delete a form, any references to that form ID should also be deleted. Orphaned records shouldn't cause problems, but add unnecessary clutter to your database. <b>If this test finds anything, we'd appreciate it if you <a href=\"http://forums.formtools.org/\">report them in the forums</a>!</b>";
 $L["text_orphan_desc_short"] = "A housekeeping test to identify and remove old database records and references that are no longer needed and should have been deleted.";
 $L["text_environment_overview_summary"] = "This section below contains a report of key information about your Form Tools installation and environment, which can be helpful when reporting bugs.";
+$L["text_ft3_compatibility"] = "Form Tools 3 has slightly difference server requirements than Form Tools 2. This page runs a couple of simple tests to confirm you will be able to run the newer version.";
 
 $L["notify_test_complete_problems"] = "The test is complete. We found a problem with one or more of your installed components.";
 $L["notify_test_complete_no_problems"] = "The test is complete. No problems were found.";
