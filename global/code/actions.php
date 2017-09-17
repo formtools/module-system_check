@@ -1,5 +1,11 @@
 <?php
 
+use FormTools\Modules\SystemCheck\Files;
+use FormTools\Modules\SystemCheck\General;
+use FormTools\Modules\SystemCheck\Hooks;
+use FormTools\Modules\SystemCheck\Tables;
+
+
 /**
  * actions.php
  *
@@ -11,6 +17,7 @@
 
 $folder = dirname(__FILE__);
 require_once(realpath("$folder/../../../../global/session_start.php"));
+
 $folder = dirname(__FILE__);
 require_once(realpath("$folder/../../library.php"));
 ft_check_permission("user");
@@ -31,13 +38,13 @@ switch ($action)
     if ($component == "core")
     {
       require_once("$g_root_dir/global/misc/config_core.php");
-      $tables = array_merge(array("FORM TOOLS CORE", "core"), sc_get_component_tables($STRUCTURE));
+      $tables = array_merge(array("FORM TOOLS CORE", "core"), Tables::getComponentTables($STRUCTURE));
     }
     else
     {
       $module_info = ft_get_module($request["component"]); // $request["component"] is just the module ID
-      $module_config = sc_get_module_config_file_contents($module_info["module_folder"]);
-      $tables = array_merge(array($module_info["module_name"], $request["component"]), sc_get_component_tables($module_config["tables"]));
+      $module_config = General::getModuleConfigFileContents($module_info["module_folder"]);
+      $tables = array_merge(array($module_info["module_name"], $request["component"]), Tables::getComponentTables($module_config["tables"]));
     }
     echo "{ \"tables\": " . ft_convert_to_json($tables) . " }";
     break;
@@ -55,7 +62,7 @@ switch ($action)
     else
     {
       $module_info = ft_get_module($request["component"]); // $request["component"] is just the module ID
-      $module_config = sc_get_module_config_file_contents($module_info["module_folder"]);
+      $module_config = General::getModuleConfigFileContents($module_info["module_folder"]);
       $info = sc_check_component_table($module_config["tables"], $request["table_name"]);
       $info["table_name"] = $request["table_name"];
       echo ft_convert_to_json($info);
@@ -69,7 +76,7 @@ switch ($action)
     $module_info   = ft_get_module($module_id);
     $module_folder  = $module_info["module_folder"];
     $module_version = $module_info["version"];
-    $result = sc_verify_module_hooks($module_folder, $module_version);
+    $result = Hooks::verifyModuleHooks($module_folder);
 
     echo "{ \"module_id\": $module_id, \"module_folder\": \"$module_folder\", \"module_name\": \"{$module_info["module_name"]}\", \"result\": \"$result\" }";
     break;
@@ -80,7 +87,7 @@ switch ($action)
   	$return_info = array("result" => "pass", "bah" => "stupid");
   	if ($component == "core")
   	{
-      $missing_files = sc_check_core_files();
+      $missing_files = Files::checkCoreFiles();
       $return_info["component_type"] = "core";
       $return_info["component_name"] = "Form Tools Core";
   	}
@@ -88,7 +95,7 @@ switch ($action)
   	{
   		$module_id = preg_replace("/^module_/", "", $component);
   		$module_info   = ft_get_module($module_id);
-  	  $missing_files = sc_check_module_files($module_info["module_folder"]);
+  	  $missing_files = Files::checkModuleFiles($module_info["module_folder"]);
       $return_info["component_type"] = "module";
       $return_info["component_name"] = $module_info["module_name"];
   	}
@@ -96,7 +103,7 @@ switch ($action)
   	{
   		$theme_id = preg_replace("/^theme_/", "", $component);
   		$theme_info   = ft_get_theme($theme_id);
-  	  $missing_files = sc_check_theme_files($theme_info["theme_folder"]);
+  	  $missing_files = Files::checkThemeFiles($theme_info["theme_folder"]);
       $return_info["component_type"] = "theme";
       $return_info["component_name"] = $theme_info["theme_name"];
   	}

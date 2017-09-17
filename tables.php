@@ -1,11 +1,15 @@
 <?php
 
 require_once("../../global/library.php");
+
+use FormTools\Settings;
+use FormTools\Modules\General;
+
 ft_init_module_page();
 
 // ------------------------------------------------------------------------------------------------
 
-$settings = ft_get_settings();
+$settings = Settings::get();
 $core_version = ($settings["release_type"] == "beta") ? "{$settings["program_version"]}-beta-{$settings["release_date"]}" : $settings["program_version"];
 
 // ---------------------------------------
@@ -62,7 +66,7 @@ $word_passed_uc  = mb_strtoupper($L["word_passed"]);
 $word_failed_uc  = mb_strtoupper($L["word_failed"]);
 
 $page_vars = array();
-$page_vars["module_list"] = sc_get_compatible_modules("tables");
+$page_vars["module_list"] = General::getCompatibleModules("tables");
 $page_vars["core_version"] = $core_version;
 $page_vars["head_string"] =<<< EOF
 <script src="{$g_root_url}/modules/system_check/global/scripts/tests.js"></script>

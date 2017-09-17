@@ -1,16 +1,20 @@
 <?php
 
 require_once("../../global/library.php");
+
+use FormTools\Modules\SystemCheck\General;
+use FormTools\Modules\SystemCheck\Hooks;
+
+
 ft_init_module_page();
 
-if (isset($_GET["repair"]))
-{
-	$module_ids = explode(",", $_GET["repair"]);
-  list($g_success, $g_message) = sc_reset_module_hook_calls($module_ids);
+if (isset($_GET["repair"])) {
+    $module_ids = explode(",", $_GET["repair"]);
+    list($g_success, $g_message) = Hooks::resetModuleHookCalls($module_ids);
 }
 
 // example
-//sc_generate_module_hook_array("module_hooks_manager_rules", "1.1.4");
+//Generation::generateModuleHookArray("module_hooks_manager_rules", "1.1.4");
 //exit;
 
 $word_testing_uc = mb_strtoupper($L["word_untested"]);
@@ -19,7 +23,7 @@ $word_failed_uc  = mb_strtoupper($L["word_failed"]);
 $notify_hook_verification_complete_problems = ft_sanitize($L["notify_hook_verification_complete_problems"]);
 
 $page_vars = array();
-$page_vars["module_list"] = sc_get_compatible_modules("hooks");
+$page_vars["module_list"] = General::getCompatibleModules("hooks");
 //print_r($page_vars["module_list"]);
 
 $page_vars["head_string"] =<<< EOF

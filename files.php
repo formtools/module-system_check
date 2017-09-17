@@ -1,6 +1,11 @@
 <?php
 
 require_once("../../global/library.php");
+
+use FormTools\Modules\Files;
+use FormTools\Modules\General;
+
+
 ft_init_module_page();
 
 $settings = ft_get_settings();
@@ -13,8 +18,8 @@ $notify_file_verification_complete_problems = ft_sanitize($L["notify_file_verifi
 
 $page_vars = array();
 $page_vars["core_version"] = $core_version;
-$page_vars["module_list"] = sc_get_compatible_modules("files");
-$page_vars["theme_list"] = sc_get_compatible_themes();
+$page_vars["module_list"] = General::getCompatibleModules("files");
+$page_vars["theme_list"] = Files::getCompatibleThemes();
 $page_vars["head_string"] =<<< EOF
 <script src="{$g_root_url}/modules/system_check/global/scripts/tests.js"></script>
 <link type="text/css" rel="stylesheet" href="{$g_root_url}/modules/system_check/global/css/styles.css">

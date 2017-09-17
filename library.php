@@ -1,8 +1,8 @@
 <?php
 
-require_once(dirname(__FILE__) . "/global/code/files.php");
-require_once(dirname(__FILE__) . "/global/code/general.php");
-require_once(dirname(__FILE__) . "/global/code/generation.php");
-require_once(dirname(__FILE__) . "/global/code/hooks.php");
-require_once(dirname(__FILE__) . "/global/code/orphans.php");
-require_once(dirname(__FILE__) . "/global/code/tables.php");
+require_once(__DIR__ . "/global/code/Files.class.php");
+require_once(__DIR__ . "/global/code/General.class.php");
+require_once(__DIR__ . "/global/code/Generation.class.php");
+require_once(__DIR__ . "/global/code/Hooks.class.php");
+require_once(__DIR__ . "/global/code/Orphans.class.php");
+require_once(__DIR__ . "/global/code/Tables.class.php");

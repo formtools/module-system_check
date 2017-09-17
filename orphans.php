@@ -1,6 +1,10 @@
 <?php
 
 require_once("../../global/library.php");
+
+use FormTools\Modules\General;
+
+
 ft_init_module_page();
 
 if (isset($_GET["clean"]))
@@ -14,7 +18,7 @@ $word_failed_uc  = mb_strtoupper($L["word_failed"]);
 $notify_hook_verification_complete_problems = ft_sanitize($L["notify_hook_verification_complete_problems"]);
 
 $page_vars = array();
-$page_vars["module_list"] = sc_get_compatible_modules("hooks");
+$page_vars["module_list"] = General::getCompatibleModules("hooks");
 
 $page_vars["head_string"] =<<< EOF
 <script src="{$g_root_url}/modules/system_check/global/scripts/tests.js"></script>

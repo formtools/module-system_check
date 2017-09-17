@@ -1,13 +1,13 @@
 ## module-system_check
 
 This module replaces the older Database Integrity module. It offers a few simple, quick tests to run on your Form Tools 
-installation: kind of like taking your car to get it serviced - except this is free!
+installation: kind of like taking your car to get it serviced.
 
 ### Documentation
 
-[http://modules.formtools.org/system_check/](http://modules.formtools.org/system_check/)
+[https://docs.formtools.org/modules/system_check/](https://docs.formtools.org/modules/system_check/)
 
 ### Form Tools Extensions
 
-For further information about Form Tools extensions, check out the following link:
-[http://www.formtools.org/extensions.php](http://www.formtools.org/extensions.php)
+For a full list of Form Tools modules, see: 
+[https://modules.formtools.org/](https://modules.formtools.org/)
