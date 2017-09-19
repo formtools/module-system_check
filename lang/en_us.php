@@ -41,8 +41,6 @@ $L["phrase_php_sessions"] = "PHP Sessions";
 $L["phrase_suhosin_extension"] = "Suhosin Extension";
 $L["phrase_curl_extension"] = "Curl Extension";
 $L["phrase_simplexml_extension"] = "SimpleXML Extension";
-$L["phrase_ft3_compatibility"] = "FT3 compatibility";
-$L["phrase_formtools3_compatibility"] = "Form Tools 3 compatibility";
 
 $L["text_tables_test"] = "The following tables will be tested to confirm they exist, and that the column information is valid.";
 $L["text_module_intro"] = "This module lets you run tests on your Form Tools installation to look for potential problems. Choose one of the tests below.";
