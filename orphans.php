@@ -2,27 +2,33 @@
 
 require_once("../../global/library.php");
 
-use FormTools\Modules\General;
+use FormTools\Core;
+use FormTools\Modules;
+use FormTools\Themes;
+use FormTools\Modules\SystemCheck\General;
+use FormTools\Modules\SystemCheck\Orphans;
 
+Core::init();
+Core::$user->checkAuth("admin");
+Modules::initModulePage();
+$L = Modules::getModuleLangFile("system_check", Core::$user->getLang());
+$root_url = Core::getRootUrl();
 
-ft_init_module_page();
-
-if (isset($_GET["clean"]))
-{
-	list($g_success, $g_message) = sc_clean_orphans();
+if (isset($_GET["clean"])) {
+	list($g_success, $g_message) = Orphans::cleanOrphans();
 }
 
 $word_testing_uc = mb_strtoupper($L["word_untested"]);
 $word_passed_uc  = mb_strtoupper($L["word_passed"]);
 $word_failed_uc  = mb_strtoupper($L["word_failed"]);
-$notify_hook_verification_complete_problems = ft_sanitize($L["notify_hook_verification_complete_problems"]);
+$notify_hook_verification_complete_problems = addcslashes($L["notify_hook_verification_complete_problems"], '"');
 
 $page_vars = array();
 $page_vars["module_list"] = General::getCompatibleModules("hooks");
 
 $page_vars["head_string"] =<<< EOF
-<script src="{$g_root_url}/modules/system_check/global/scripts/tests.js"></script>
-<link type="text/css" rel="stylesheet" href="{$g_root_url}/modules/system_check/global/css/styles.css">
+<script src="{$root_url}/modules/system_check/global/scripts/tests.js"></script>
+<link type="text/css" rel="stylesheet" href="{$root_url}/modules/system_check/global/css/styles.css">
 <script>
 g.messages = [];
 g.messages["word_testing_c"] = "{$L["word_testing_c"]}";
@@ -40,7 +46,7 @@ g.messages["validation_no_components_selected"] = "{$L["validation_no_components
 g.messages["notify_hook_verification_complete_problems"] = "$notify_hook_verification_complete_problems";
 
 var loading = new Image();
-loading.src = "$g_root_url/modules/system_check/images/loading.gif";
+loading.src = "$root_url/modules/system_check/images/loading.gif";
 $(function() {
   $("#repair_hooks").live("click", function() {
     window.location = "hooks.php?repair=" + sc_ns.hook_verification_failed_module_ids.toString();
@@ -49,4 +55,4 @@ $(function() {
 </script>
 EOF;
 
-ft_display_module_page("templates/orphans.tpl", $page_vars);
+Themes::displayModulePage("templates/orphans.tpl", $page_vars);

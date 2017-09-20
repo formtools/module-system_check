@@ -1,6 +1,5 @@
 <?php
 
-
 require_once("../../global/library.php");
 
 use FormTools\Core;

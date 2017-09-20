@@ -136,7 +136,7 @@ class Orphans
     }
 
 
-    function sc_clean_orphans()
+    public static function cleanOrphans()
     {
         global $g_root_dir;
 
