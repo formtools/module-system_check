@@ -25,7 +25,7 @@ class Orphans
      */
     public static function findTableOrphans($table_name, $remove_orphans)
     {
-        global $g_table_prefix;
+        $table_prefix = Core::getDbTablePrefix();
 
         $results = array(
             "table_name" => $table_name,
@@ -35,7 +35,7 @@ class Orphans
             "problems" => ""
         );
 
-        $table_name_without_prefix = preg_replace("/^{$g_table_prefix}/", "", $table_name);
+        $table_name_without_prefix = preg_replace("/^{$table_prefix}/", "", $table_name);
 
         $has_test = true;
         switch ($table_name_without_prefix) {
@@ -67,7 +67,7 @@ class Orphans
                 $response = Orphans::testFieldOptions($remove_orphans);
                 break;
             case "field_settings":
-                $response = Orphans::orphanTestFieldSettings($remove_orphans);
+                $response = Orphans::testFieldSettings($remove_orphans);
                 break;
             case "field_type_settings":
                 $response = Orphans::testFieldTypeSettings($remove_orphans);
@@ -92,9 +92,6 @@ class Orphans
                 break;
             case "multi_page_form_urls":
                 $response = Orphans::testMultiPageFormUrls($remove_orphans);
-                break;
-            case "new_view_submission_defaults":
-                $response = Orphans::testNewViewSubmissionDefaults($remove_orphans);
                 break;
             case "new_view_submission_defaults":
                 $response = Orphans::testNewViewSubmissionDefaults($remove_orphans);
@@ -323,29 +320,38 @@ class Orphans
 
     private static function testClientForms($remove_orphans)
     {
+        $db = Core::$db;
+
         $response = array(
             "test_descriptions" => "Checks for invalid account IDs and invalid form IDs.",
             "problems" => array()
         );
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}client_forms");
+        $db->query("SELECT * FROM {PREFIX}client_forms");
+        $db->execute();
+        $client_forms = $db->fetchAll();
 
         $valid_account_ids = General::getAccountIds();
         $valid_form_ids = General::getFormIds();
 
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($client_forms as $row) {
             if (!in_array($row["account_id"], $valid_account_ids)) {
                 $response["problems"][] = "Invalid account ID: {$row["account_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}client_forms
-              WHERE  account_id = {$row["account_id"]} AND
-                     form_id = {$row["form_id"]}
-              LIMIT 1
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}client_forms
+                        WHERE  account_id = :account_id AND
+                               form_id = :form_id
+                        LIMIT 1
+                    ");
+                    $db->bindAll(array(
+                        "account_id" => $row["account_id"],
+                        "form_id" => $row["form_id"]
+                    ));
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -355,12 +361,17 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}client_forms
-              WHERE  account_id = {$row["account_id"]} AND
-                     form_id = {$row["form_id"]}
-              LIMIT 1
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}client_forms
+                        WHERE  account_id = :account_id AND
+                               form_id = :form_id
+                        LIMIT 1
+                    ");
+                    $db->bindAll(array(
+                        "account_id" => $row["account_id"],
+                        "form_id" => $row["form_id"]
+                    ));
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -373,33 +384,40 @@ class Orphans
     }
 
 
-    function sc_orphan_test__client_views($remove_orphans)
+    private static function testClientViews($remove_orphans)
     {
-        global $g_table_prefix, $g_current_version, $g_cache;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for invalid account IDs and invalid View IDs.",
-        "problems" => array()
+            "test_descriptions" => "Checks for invalid account IDs and invalid View IDs.",
+            "problems" => array()
         );
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}client_views");
+        $db->query("SELECT * FROM {PREFIX}client_views");
+        $db->execute();
+        $client_views = $db->fetchAll();
 
         $valid_account_ids = General::getAccountIds();
         $valid_view_ids = General::getViewIds();
 
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($client_views as $row) {
             if (!in_array($row["account_id"], $valid_account_ids)) {
                 $response["problems"][] = "Invalid account ID: {$row["account_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}client_views
-              WHERE  account_id = {$row["account_id"]} AND
-                     view_id = {$row["view_id"]}
-              LIMIT 1
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}client_views
+                        WHERE  account_id = :account_id AND
+                               view_id = :view_id
+                        LIMIT 1
+                    ");
+                    $db->bindAll(array(
+                        "account_id" => $row["account_id"],
+                        "view_id" => $row["view_id"]
+                    ));
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -409,12 +427,17 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}client_views
-              WHERE  account_id = {$row["account_id"]} AND
-                     view_id = {$row["view_id"]}
-              LIMIT 1
-            ");
+                    $db->query("
+                          DELETE FROM {PREFIX}client_views
+                          WHERE  account_id = :account_id AND
+                                 view_id = :view_id
+                          LIMIT 1
+                    ");
+                    $db->bindAll(array(
+                        "account_id" => $row["account_id"],
+                        "view_id" => $row["view_id"]
+                    ));
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -431,35 +454,39 @@ class Orphans
      * Tests: form_id, view_mapping_view_id, limit_email_content_to_fields_in_view, email_from_account_id,
      *        email_from_form_email_id, email_reply_to_account_id, email_reply_to_form_email_id,
      */
-    function sc_orphan_test__email_templates($remove_orphans)
+    private static function testEmailTemplates($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Assorted tests for invalid form IDs, email configuration IDs, View IDs, Account IDs.",
-        "problems" => array()
+            "test_descriptions" => "Assorted tests for invalid form IDs, email configuration IDs, View IDs, Account IDs.",
+            "problems" => array()
         );
 
         $valid_account_ids = General::getAccountIds();
-        $valid_email_ids = General::getEmailIds();
         $valid_view_ids = General::getViewIds();
         $valid_form_email_config_ids = General::getFormEmailConfigIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}email_templates");
+        $db->query("SELECT * FROM {PREFIX}email_templates");
+        $db->execute();
+        $email_templates = $db->fetchAll();
 
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        $num_orphans = 0;
+        foreach ($email_templates as $row) {
             if (isset($row["view_mapping_view_id"])) {
                 if (!in_array($row["view_mapping_view_id"], $valid_view_ids)) {
                     $response["problems"][] = "Invalid view_mapping_view_id: {$row["view_mapping_view_id"]} for email_id = {$row["email_id"]}";
 
                     // clean-up code
                     if ($remove_orphans) {
-                        @mysql_query("
-                UPDATE {$g_table_prefix}email_templates
-                SET    view_mapping_view_id = NULL
-                WHERE  email_id = {$row["email_id"]}
-              ");
+                        $db->query("
+                            UPDATE {PREFIX}email_templates
+                            SET    view_mapping_view_id = NULL
+                            WHERE  email_id = :email_id
+                        ");
+                        $db->bind("email_id", $row["email_id"]);
+                        $db->execute();
                     }
                 }
                 $num_tests++;
@@ -472,11 +499,13 @@ class Orphans
 
                     // clean-up code
                     if ($remove_orphans) {
-                        @mysql_query("
-                UPDATE {$g_table_prefix}email_templates
-                SET    limit_email_content_to_fields_in_view = NULL
-                WHERE  email_id = {$row["email_id"]}
-              ");
+                        $db->query("
+                            UPDATE {PREFIX}email_templates
+                            SET    limit_email_content_to_fields_in_view = NULL
+                            WHERE  email_id = :email_id
+                        ");
+                        $db->bind("email_id", $row["email_id"]);
+                        $db->execute();
                     }
                 }
                 $num_tests++;
@@ -489,11 +518,13 @@ class Orphans
 
                     // clean-up code
                     if ($remove_orphans) {
-                        @mysql_query("
-                UPDATE {$g_table_prefix}email_templates
-                SET    email_from_account_id = NULL
-                WHERE  email_id = {$row["email_id"]}
-              ");
+                        $db->query("
+                            UPDATE {PREFIX}email_templates
+                            SET    email_from_account_id = NULL
+                            WHERE  email_id = :email_id
+                        ");
+                        $db->bind("email_id", $row["email_id"]);
+                        $db->execute();
                     }
                 }
                 $num_tests++;
@@ -505,11 +536,13 @@ class Orphans
 
                     // clean-up code
                     if ($remove_orphans) {
-                        @mysql_query("
-                UPDATE {$g_table_prefix}email_templates
-                SET    email_from_form_email_id = NULL
-                WHERE  email_id = {$row["email_id"]}
-              ");
+                        $db->query("
+                            UPDATE {PREFIX}email_templates
+                            SET    email_from_form_email_id = NULL
+                            WHERE  email_id = :email_id
+                        ");
+                        $db->bind("email_id", $row["email_id"]);
+                        $db->execute();
                     }
                 }
                 $num_tests++;
@@ -521,11 +554,13 @@ class Orphans
 
                     // clean-up code
                     if ($remove_orphans) {
-                        @mysql_query("
-                UPDATE {$g_table_prefix}email_templates
-                SET    email_reply_to_account_id = NULL
-                WHERE  email_id = {$row["email_id"]}
-              ");
+                        $db->query("
+                            UPDATE {PREFIX}email_templates
+                            SET    email_reply_to_account_id = NULL
+                            WHERE  email_id = :email_id
+                        ");
+                        $db->bind("email_id", $row["email_id"]);
+                        $db->execute();
                     }
                 }
                 $num_tests++;
@@ -537,11 +572,13 @@ class Orphans
 
                     // clean-up code
                     if ($remove_orphans) {
-                        @mysql_query("
-                UPDATE {$g_table_prefix}email_templates
-                SET    email_reply_to_form_email_id = NULL
-                WHERE  email_id = {$row["email_id"]}
-              ");
+                        $db->query("
+                            UPDATE {PREFIX}email_templates
+                            SET    email_reply_to_form_email_id = NULL
+                            WHERE  email_id = :email_id
+                        ");
+                        $db->bind("email_id", $row["email_id"]);
+                        $db->execute();
                     }
                 }
                 $num_tests++;
@@ -549,7 +586,7 @@ class Orphans
         }
 
         $response["num_tests"] = $num_tests;
-        $response["num_orphans"] = count($response["problems"]);
+        $response["num_orphans"] = $num_orphans;
 
         return $response;
     }
@@ -559,33 +596,40 @@ class Orphans
      * This table is a pretty recent addition. If the current Core version doesn't have the table,
      * this test simply won't be called.
      */
-    function sc_orphan_test__email_template_edit_submission_views($remove_orphans)
+    private static function testEmailTemplateEditSubmissionViews($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for invalid email template IDs and invalid View IDs.",
-        "problems" => array()
+            "test_descriptions" => "Checks for invalid email template IDs and invalid View IDs.",
+            "problems" => array()
         );
 
         $valid_email_ids = General::getEmailIds();
         $valid_view_ids = General::getViewIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}email_template_edit_submission_views");
+        $db->query("SELECT * FROM {PREFIX}email_template_edit_submission_views");
+        $db->execute();
+        $rows = $db->fetchAll();
 
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["email_id"], $valid_email_ids)) {
                 $response["problems"][] = "Invalid email template ID: {$row["email_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}email_template_edit_submission_views
-              WHERE  email_id = {$row["email_id"]} AND
-                     view_id = {$row["view_id"]}
-              LIMIT 1
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}email_template_edit_submission_views
+                        WHERE  email_id = :email_id AND
+                               view_id = :view_id
+                        LIMIT 1
+                    ");
+                    $db->bindAll(array(
+                        "email_id" => $row["email_id"],
+                        "view_id" => $row["view_id"]
+                    ));
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -595,12 +639,17 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}email_template_edit_submission_views
-              WHERE  email_id = {$row["email_id"]} AND
-                     view_id = {$row["view_id"]}
-              LIMIT 1
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}email_template_edit_submission_views
+                        WHERE  email_id = :email_id AND
+                               view_id = :view_id
+                        LIMIT 1
+                    ");
+                    $db->bindAll(array(
+                        "email_id" => $row["email_id"],
+                        "view_id" => $row["view_id"]
+                    ));
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -617,33 +666,37 @@ class Orphans
      * This table is a pretty recent addition. If the current Core version doesn't have the table,
      * this test simply won't be called.
      */
-    function sc_orphan_test__email_template_recipients($remove_orphans)
+    private static function testEmailTemplateRecipients($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for records mapped to now-deleted email template IDs, deleted Account ID and email configuration ID references.",
-        "problems" => array()
+            "test_descriptions" => "Checks for records mapped to now-deleted email template IDs, deleted Account ID and email configuration ID references.",
+            "problems" => array()
         );
 
         $valid_email_ids = General::getEmailIds();
         $valid_account_ids = General::getAccountIds();
         $valid_email_config_ids = General::getFormEmailConfigIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}email_template_recipients");
+        $db->query("SELECT * FROM {PREFIX}email_template_recipients");
+        $db->execute();
+        $rows = $db->fetchAll();
 
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["email_template_id"], $valid_email_ids)) {
                 $response["problems"][] = "invalid template ID {$row["email_template_id"]} being referenced by the table's Primary Key ID {$row["recipient_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}email_template_recipients
-              WHERE  recipient_id = {$row["recipient_id"]}
-              LIMIT 1
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}email_template_recipients
+                        WHERE  recipient_id = :recipient_id
+                        LIMIT 1
+                    ");
+                    $db->bind("recipient_id", $row["recipient_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -653,12 +706,14 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              UPDATE {$g_table_prefix}email_template_recipients
-              SET    account_id = NULL
-              WHERE  recipient_id = {$row["recipient_id"]}
-              LIMIT 1
-            ");
+                    $db->query("
+                        UPDATE {PREFIX}email_template_recipients
+                        SET    account_id = NULL
+                        WHERE  recipient_id = :recipient_id
+                        LIMIT 1
+                    ");
+                    $db->bind("recipient_id", $row["recipient_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -668,12 +723,14 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              UPDATE {$g_table_prefix}email_template_recipients
-              SET    form_email_id = NULL
-              WHERE  recipient_id = {$row["recipient_id"]}
-              LIMIT 1
-            ");
+                    $db->query("
+                        UPDATE {PREFIX}email_template_recipients
+                        SET    form_email_id = NULL
+                        WHERE  recipient_id = :recipient_id
+                        LIMIT 1
+                    ");
+                    $db->bind("recipient_id", $row["recipient_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -686,32 +743,39 @@ class Orphans
     }
 
 
-    function sc_orphan_test__email_template_when_sent_views($remove_orphans)
+    private static function testEmailTemplateWhenSentViews($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for records mapped to now-deleted email templates and Views.",
-        "problems" => array()
+            "test_descriptions" => "Checks for records mapped to now-deleted email templates and Views.",
+            "problems" => array()
         );
 
         $valid_email_ids = General::getEmailIds();
         $valid_view_ids = General::getViewIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}email_template_when_sent_views");
+        $db->query("SELECT * FROM {PREFIX}email_template_when_sent_views");
+        $db->execute();
+        $rows = $db->fetchAll();
 
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["email_id"], $valid_email_ids)) {
                 $response["problems"][] = "invalid email template ID {$row["email_template_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}email_template_when_sent_views
-              WHERE  email_id = {$row["email_id"]} AND
-                     view_id = {$row["view_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}email_template_when_sent_views
+                        WHERE  email_id = :email_id AND
+                               view_id = {$row["view_id"]}
+                    ");
+                    $db->bindAll(array(
+                        "email_id" => $row["email_id"],
+                        "view_id" => $row["view_id"]
+                    ));
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -721,11 +785,16 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}email_template_when_sent_views
-              WHERE  email_id = {$row["email_id"]} AND
-                     view_id = {$row["view_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}email_template_when_sent_views
+                        WHERE  email_id = :email_id AND
+                               view_id = :view_id
+                    ");
+                    $db->bindAll(array(
+                        "email_id" => $row["email_id"],
+                        "view_id" => $row["view_id"]
+                    ));
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -738,9 +807,9 @@ class Orphans
     }
 
 
-    function sc_orphan_test__field_options($remove_orphans)
+    private static function testFieldOptions($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
             "test_descriptions" => "Checks each field option is attached to a valid list_group_id.",
@@ -749,18 +818,23 @@ class Orphans
 
         $valid_list_group_ids = General::getListGroupIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}field_options");
+        $db->query("SELECT * FROM {PREFIX}field_options");
+        $db->execute();
+        $field_options = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($field_options as $row) {
             if (!in_array($row["list_group_id"], $valid_list_group_ids)) {
                 $response["problems"][] = "invalid list_group_id {$row["list_group_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}field_options
-              WHERE  list_id = {$row["list_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}field_options
+                        WHERE  list_id = :list_id
+                    ");
+                    $db->bind("list_id", $row["list_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -773,30 +847,35 @@ class Orphans
     }
 
 
-    function sc_orphan_test__field_settings($remove_orphans)
+    private static function testFieldSettings($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for invalid references to deleted field IDs and settings IDs.",
-        "problems" => array()
+            "test_descriptions" => "Checks for invalid references to deleted field IDs and settings IDs.",
+            "problems" => array()
         );
 
         $valid_field_ids = General::getFieldIds();
         $valid_field_type_setting_ids = General::getFieldTypeSettingIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}field_settings");
+        $db->query("SELECT * FROM {PREFIX}field_settings");
+        $db->execute();
+        $field_settings = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($field_settings as $row) {
             if (!in_array($row["field_id"], $valid_field_ids)) {
                 $response["problems"][] = "invalid field_id: {$row["field_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}field_settings
-              WHERE  field_id = {$row["field_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}field_settings
+                        WHERE  field_id = :field_id
+                    ");
+                    $db->bind("field_id", $row["field_id"]);
+                    $db->execute();
                 }
             }
             if (!in_array($row["setting_id"], $valid_field_type_setting_ids)) {
@@ -804,10 +883,12 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}field_settings
-              WHERE  setting_id = {$row["setting_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}field_settings
+                        WHERE  setting_id = :setting_id
+                    ");
+                    $db->bind("setting_id", $row["setting_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -820,29 +901,34 @@ class Orphans
     }
 
 
-    function sc_orphan_test__field_type_settings($remove_orphans)
+    private static function testFieldTypeSettings($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for invalid references to deleted field types.",
-        "problems" => array()
+            "test_descriptions" => "Checks for invalid references to deleted field types.",
+            "problems" => array()
         );
 
         $valid_field_type_ids = General::getFieldTypeIds();
 
-        $query = mysql_query("SELECT setting_id, field_type_id FROM {$g_table_prefix}field_type_settings");
+        $db->query("SELECT setting_id, field_type_id FROM {PREFIX}field_type_settings");
+        $db->execute();
+        $rows = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["field_type_id"], $valid_field_type_ids)) {
                 $response["problems"][] = "setting_id: {$row["setting_id"]} references invalid field_type_id: {$row["field_type_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}field_type_settings
-              WHERE  field_type_id = {$row["field_type_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}field_type_settings
+                        WHERE  field_type_id = :field_type_id
+                    ");
+                    $db->bind("field_type_id", $row["field_type_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -855,30 +941,38 @@ class Orphans
     }
 
 
-    function sc_orphan_test__field_type_setting_options($remove_orphans)
+    private static function testFieldTypeSettingOptions($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for invalid references to deleted field type settings.",
-        "problems" => array()
+            "test_descriptions" => "Checks for invalid references to deleted field type settings.",
+            "problems" => array()
         );
 
         $valid_field_type_setting_ids = General::getFieldTypeSettingIds();
 
-        $query = mysql_query("SELECT setting_id, option_order FROM {$g_table_prefix}field_type_setting_options");
+        $db->query("SELECT setting_id, option_order FROM {PREFIX}field_type_setting_options");
+        $db->execute();
+        $rows = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["setting_id"], $valid_field_type_setting_ids)) {
                 $response["problems"][] = "Invalid reference to setting_id: {$row["setting_id"]} for option_order: {$row["option_order"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}field_type_setting_options
-              WHERE  setting_id = {$row["setting_id"]} AND
-                     option_order = {$row["option_order"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}field_type_setting_options
+                        WHERE setting_id = :setting_id AND
+                              option_order = :option_order
+                    ");
+                    $db->bindAll(array(
+                        "setting_id"   => $row["setting_id"],
+                        "option_order" => $row["option_order"]
+                    ));
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -891,13 +985,13 @@ class Orphans
     }
 
 
-    function sc_orphan_test__field_type_validation_rules($remove_orphans)
+    private static function testFieldTypeValidationRules($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for references to non-existent field types.",
-        "problems" => array()
+            "test_descriptions" => "Checks for references to non-existent field types.",
+            "problems" => array()
         );
 
         $valid_field_type_ids = General::getFieldTypeIds();
@@ -926,13 +1020,13 @@ class Orphans
     }
 
 
-    function sc_orphan_test__field_validation($remove_orphans)
+    private static function testFieldValidation($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for validation rules that are no longer mapped to valid fields or validation rules.",
-        "problems" => array()
+            "test_descriptions" => "Checks for validation rules that are no longer mapped to valid fields or validation rules.",
+            "problems" => array()
         );
 
         $valid_field_ids = General::getFieldIds();
@@ -973,17 +1067,17 @@ class Orphans
     }
 
 
-    function sc_orphan_test__form_email_fields($remove_orphans)
+    private static function testFormEmailFields($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for records that map to invalid form_id and corresponding form fields",
-        "problems" => array()
+            "test_descriptions" => "Checks for records that map to invalid form_id and corresponding form fields",
+            "problems" => array()
         );
 
         $valid_form_ids = General::getFormIds();
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}form_email_fields");
+        $query = mysql_query("SELECT * FROM {PREFIX}form_email_fields");
         $num_tests = 0;
         while ($row = mysql_fetch_assoc($query)) {
             if (!in_array($row["form_id"], $valid_form_ids)) {
@@ -1045,13 +1139,13 @@ class Orphans
     }
 
 
-    function sc_orphan_test__form_fields($remove_orphans)
+    private static function testFormFields($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for records that map to invalid form_id and field_type_id records.",
-        "problems" => array()
+            "test_descriptions" => "Checks for records that map to invalid form_id and field_type_id records.",
+            "problems" => array()
         );
 
         $valid_form_ids = General::getFormIds();
@@ -1098,9 +1192,9 @@ class Orphans
     }
 
 
-    function sc_orphan_test__menu_items($remove_orphans)
+    private static function testMenuItems($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
         "test_descriptions" => "Checks for menu item records that are mapped to invalid menus",
@@ -1133,13 +1227,13 @@ class Orphans
     }
 
 
-    function sc_orphan_test__multi_page_form_urls($remove_orphans)
+    private static function testMultiPageFormUrls($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for records that are mapped to invalid form_ids",
-        "problems" => array()
+            "test_descriptions" => "Checks for records that are mapped to invalid form_ids",
+            "problems" => array()
         );
 
         $valid_form_ids = General::getFormIds();
@@ -1168,13 +1262,13 @@ class Orphans
     }
 
 
-    function sc_orphan_test__new_view_submission_defaults($remove_orphans)
+    private static function testNewViewSubmissionDefaults($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for records that are mapped to invalid view_ids and field_ids",
-        "problems" => array()
+            "test_descriptions" => "Checks for records that are mapped to invalid view_ids and field_ids",
+            "problems" => array()
         );
 
         $valid_view_ids = General::getViewIds();
@@ -1217,19 +1311,19 @@ class Orphans
     }
 
 
-    function sc_orphan_test__public_form_omit_list($remove_orphans)
+    private static function testPublicFormOmitList($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for references to non-existent form IDs or account IDs",
-        "problems" => array()
+            "test_descriptions" => "Checks for references to non-existent form IDs or account IDs",
+            "problems" => array()
         );
 
         $valid_form_ids = General::getFormIds();
         $valid_account_ids = General::getAccountIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}public_form_omit_list");
+        $query = mysql_query("SELECT * FROM {PREFIX}public_form_omit_list");
         $num_tests = 0;
         while ($row = mysql_fetch_assoc($query)) {
             if (!in_array($row["form_id"], $valid_form_ids)) {
@@ -1238,9 +1332,9 @@ class Orphans
                 // clean-up code
                 if ($remove_orphans) {
                     @mysql_query("
-              DELETE FROM {$g_table_prefix}public_form_omit_list
-              WHERE  form_id = {$row["form_id"]}
-            ");
+                        DELETE FROM {PREFIX}public_form_omit_list
+                        WHERE  form_id = {$row["form_id"]}
+                    ");
                 }
             }
             $num_tests++;
@@ -1251,9 +1345,9 @@ class Orphans
                 // clean-up code
                 if ($remove_orphans) {
                     @mysql_query("
-              DELETE FROM {$g_table_prefix}public_form_omit_list
-              WHERE  account_id = {$row["account_id"]}
-            ");
+                        DELETE FROM {PREFIX}public_form_omit_list
+                        WHERE  account_id = {$row["account_id"]}
+                    ");
                 }
             }
             $num_tests++;
@@ -1266,19 +1360,19 @@ class Orphans
     }
 
 
-    function sc_orphan_test__public_view_omit_list($remove_orphans)
+    private static function testPublicViewOmitList($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for references to non-existent view IDs or account IDs",
-        "problems" => array()
+            "test_descriptions" => "Checks for references to non-existent view IDs or account IDs",
+            "problems" => array()
         );
 
         $valid_view_ids = General::getViewIds();
         $valid_account_ids = General::getAccountIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}public_view_omit_list");
+        $query = mysql_query("SELECT * FROM {PREFIX}public_view_omit_list");
         $num_tests = 0;
         while ($row = mysql_fetch_assoc($query)) {
             if (!in_array($row["view_id"], $valid_view_ids)) {
@@ -1315,13 +1409,13 @@ class Orphans
     }
 
 
-    function sc_orphan_test__views($remove_orphans)
+    private static function testViews($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for references to non-existent form IDs",
-        "problems" => array()
+            "test_descriptions" => "Checks for references to non-existent form IDs",
+            "problems" => array()
         );
 
         $valid_form_ids = General::getFormIds();
@@ -1350,9 +1444,9 @@ class Orphans
     }
 
 
-    function sc_orphan_test__view_columns($remove_orphans)
+    private static function testViewColumns($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
         "test_descriptions" => "Checks for references to non-existent View IDs and field IDs",
@@ -1399,7 +1493,7 @@ class Orphans
     }
 
 
-    function sc_orphan_test__view_fields($remove_orphans)
+    private static function testViewFields($remove_orphans)
     {
         global $g_table_prefix;
 
@@ -1448,19 +1542,19 @@ class Orphans
     }
 
 
-    function sc_orphan_test__view_filters($remove_orphans)
+    private static function testViewFilters($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for references to non-existent View IDs and field IDs",
-        "problems" => array()
+            "test_descriptions" => "Checks for references to non-existent View IDs and field IDs",
+            "problems" => array()
         );
 
         $valid_view_ids = General::getViewIds();
         $valid_field_ids = General::getFieldIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}view_filters");
+        $query = mysql_query("SELECT * FROM {PREFIX}view_filters");
         $num_tests = 0;
         while ($row = mysql_fetch_assoc($query)) {
             if (!in_array($row["view_id"], $valid_view_ids)) {
@@ -1469,9 +1563,9 @@ class Orphans
                 // clean-up code
                 if ($remove_orphans) {
                     @mysql_query("
-              DELETE FROM {$g_table_prefix}view_filters
-              WHERE  view_id = {$row["view_id"]}
-            ");
+                        DELETE FROM {PREFIX}view_filters
+                        WHERE  view_id = {$row["view_id"]}
+                    ");
                 }
             }
             $num_tests++;
@@ -1482,9 +1576,9 @@ class Orphans
                 // clean-up code
                 if ($remove_orphans) {
                     @mysql_query("
-              DELETE FROM {$g_table_prefix}view_filters
-              WHERE  field_id = {$row["field_id"]}
-            ");
+                        DELETE FROM {PREFIX}view_filters
+                        WHERE  field_id = {$row["field_id"]}
+                    ");
                 }
             }
             $num_tests++;
@@ -1497,13 +1591,13 @@ class Orphans
     }
 
 
-    function sc_orphan_test__view_tabs($remove_orphans)
+    private static function testViewTabs($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for references to non-existent View IDs",
-        "problems" => array()
+            "test_descriptions" => "Checks for references to non-existent View IDs",
+            "problems" => array()
         );
 
         $valid_view_ids = General::getViewIds();
@@ -1517,9 +1611,9 @@ class Orphans
                 // clean-up code
                 if ($remove_orphans) {
                     @mysql_query("
-              DELETE FROM {$g_table_prefix}view_tabs
-              WHERE  view_id = {$row["view_id"]}
-            ");
+                        DELETE FROM {PREFIX}view_tabs
+                        WHERE  view_id = {$row["view_id"]}
+                    ");
                 }
             }
             $num_tests++;
