@@ -25,10 +25,9 @@ $notify_hook_verification_complete_problems = addcslashes($L["notify_hook_verifi
 
 $page_vars = array();
 $page_vars["module_list"] = General::getCompatibleModules("hooks");
-
+$page_vars["css_files"] = array("{$root_url}/modules/system_check/global/css/styles.css");
 $page_vars["head_string"] =<<< EOF
 <script src="{$root_url}/modules/system_check/global/scripts/tests.js"></script>
-<link type="text/css" rel="stylesheet" href="{$root_url}/modules/system_check/global/css/styles.css">
 <script>
 g.messages = [];
 g.messages["word_testing_c"] = "{$L["word_testing_c"]}";

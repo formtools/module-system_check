@@ -3,6 +3,11 @@
 
 namespace FormTools\Modules\SystemCheck;
 
+use PDO;
+use FormTools\Core;
+use FormTools\Themes;
+
+
 /**
  * Contains all functions relating to the Orphan Record Check page. This test has specific,
  * hardcoded tests to run on each table. The tests may vary depending on the current Core version.
@@ -18,16 +23,16 @@ class Orphans
      *
      * @param string $table_name
      */
-    function sc_find_table_orphans($table_name, $remove_orphans)
+    public static function findTableOrphans($table_name, $remove_orphans)
     {
         global $g_table_prefix;
 
         $results = array(
-        "table_name" => $table_name,
-        "num_tests" => 0,
-        "num_orphans" => 0,
-        "test_descriptions" => "",
-        "problems" => ""
+            "table_name" => $table_name,
+            "num_tests" => 0,
+            "num_orphans" => 0,
+            "test_descriptions" => "",
+            "problems" => ""
         );
 
         $table_name_without_prefix = preg_replace("/^{$g_table_prefix}/", "", $table_name);
@@ -35,85 +40,85 @@ class Orphans
         $has_test = true;
         switch ($table_name_without_prefix) {
             case "accounts":
-                $response = sc_orphan_test__accounts($remove_orphans);
+                $response = Orphans::testAccounts($remove_orphans);
                 break;
             case "account_settings":
-                $response = sc_orphan_test__account_settings($remove_orphans);
+                $response = Orphans::testAccountSettings($remove_orphans);
                 break;
             case "client_forms":
-                $response = sc_orphan_test__client_forms($remove_orphans);
+                $response = Orphans::testClientForms($remove_orphans);
                 break;
             case "client_views":
-                $response = sc_orphan_test__client_views($remove_orphans);
+                $response = Orphans::testClientViews($remove_orphans);
                 break;
             case "email_templates":
-                $response = sc_orphan_test__email_templates($remove_orphans);
+                $response = Orphans::testEmailTemplates($remove_orphans);
                 break;
             case "email_template_edit_submission_views":
-                $response = sc_orphan_test__email_template_edit_submission_views($remove_orphans);
+                $response = Orphans::testEmailTemplateEditSubmissionViews($remove_orphans);
                 break;
             case "email_template_recipients":
-                $response = sc_orphan_test__email_template_recipients($remove_orphans);
+                $response = Orphans::testEmailTemplateRecipients($remove_orphans);
                 break;
             case "email_template_when_sent_views":
-                $response = sc_orphan_test__email_template_when_sent_views($remove_orphans);
+                $response = Orphans::testEmailTemplateWhenSentViews($remove_orphans);
                 break;
             case "field_options":
-                $response = sc_orphan_test__field_options($remove_orphans);
+                $response = Orphans::testFieldOptions($remove_orphans);
                 break;
             case "field_settings":
-                $response = sc_orphan_test__field_settings($remove_orphans);
+                $response = Orphans::orphanTestFieldSettings($remove_orphans);
                 break;
             case "field_type_settings":
-                $response = sc_orphan_test__field_type_settings($remove_orphans);
+                $response = Orphans::testFieldTypeSettings($remove_orphans);
                 break;
             case "field_type_setting_options":
-                $response = sc_orphan_test__field_type_setting_options($remove_orphans);
+                $response = Orphans::testFieldTypeSettingOptions($remove_orphans);
                 break;
             case "field_type_validation_rules":
-                $response = sc_orphan_test__field_type_validation_rules($remove_orphans);
+                $response = Orphans::testFieldTypeValidationRules($remove_orphans);
                 break;
             case "field_validation":
-                $response = sc_orphan_test__field_validation($remove_orphans);
+                $response = Orphans::testFieldValidation($remove_orphans);
                 break;
             case "form_email_fields":
-                $response = sc_orphan_test__form_email_fields($remove_orphans);
+                $response = Orphans::testFormEmailFields($remove_orphans);
                 break;
             case "form_fields":
-                $response = sc_orphan_test__form_fields($remove_orphans);
+                $response = Orphans::testFormFields($remove_orphans);
                 break;
             case "menu_items":
-                $response = sc_orphan_test__menu_items($remove_orphans);
+                $response = Orphans::testMenuItems($remove_orphans);
                 break;
             case "multi_page_form_urls":
-                $response = sc_orphan_test__multi_page_form_urls($remove_orphans);
+                $response = Orphans::testMultiPageFormUrls($remove_orphans);
                 break;
             case "new_view_submission_defaults":
-                $response = sc_orphan_test__new_view_submission_defaults($remove_orphans);
+                $response = Orphans::testNewViewSubmissionDefaults($remove_orphans);
                 break;
             case "new_view_submission_defaults":
-                $response = sc_orphan_test__new_view_submission_defaults($remove_orphans);
+                $response = Orphans::testNewViewSubmissionDefaults($remove_orphans);
                 break;
             case "public_form_omit_list":
-                $response = sc_orphan_test__public_form_omit_list($remove_orphans);
+                $response = Orphans::testPublicFormOmitList($remove_orphans);
                 break;
             case "public_view_omit_list":
-                $response = sc_orphan_test__public_view_omit_list($remove_orphans);
+                $response = Orphans::testPublicViewOmitList($remove_orphans);
                 break;
             case "views":
-                $response = sc_orphan_test__views($remove_orphans);
+                $response = Orphans::testViews($remove_orphans);
                 break;
             case "view_columns":
-                $response = sc_orphan_test__view_columns($remove_orphans);
+                $response = Orphans::testViewColumns($remove_orphans);
                 break;
             case "view_fields":
-                $response = sc_orphan_test__view_fields($remove_orphans);
+                $response = Orphans::testViewFields($remove_orphans);
                 break;
             case "view_filters":
-                $response = sc_orphan_test__view_filters($remove_orphans);
+                $response = Orphans::testViewFilters($remove_orphans);
                 break;
             case "view_tabs":
-                $response = sc_orphan_test__view_tabs($remove_orphans);
+                $response = Orphans::testViewTabs($remove_orphans);
                 break;
 
             default:
@@ -138,14 +143,14 @@ class Orphans
 
     public static function cleanOrphans()
     {
-        global $g_root_dir;
+        $root_dir = Core::getRootDir();
 
-        require_once("$g_root_dir/global/misc/config_core.php");
+        require_once("$root_dir/global/misc/config_core.php");
         $tables = Tables::getComponentTables($STRUCTURE);
 
         $problems = array();
         foreach ($tables as $table_name) {
-            $response = sc_find_table_orphans($table_name, true);
+            $response = Orphans::findTableOrphans($table_name, true);
             if (!empty($response["clean_up_problems"])) {
                 $problems[] = $response["clean_up_problems"];
             }
@@ -175,36 +180,46 @@ class Orphans
     /**
      * Tests: account_id
      */
-    function sc_orphan_test__account_settings($remove_orphans)
+    private static function testAccountSettings($remove_orphans)
     {
-        global $g_table_prefix, $g_current_version, $g_cache;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Looks for settings associated with non-existent user accounts.",
-        "problems" => array()
+            "test_descriptions" => "Looks for settings associated with non-existent user accounts.",
+            "problems" => array()
         );
 
         $valid_account_ids = General::getAccountIds();
 
-        $settings_query = mysql_query("SELECT * FROM {$g_table_prefix}account_settings");
+        $db->query("SELECT * FROM {PREFIX}account_settings");
+        $db->execute();
+        $rows = $db->fetchAll();
+
         $num_tests = 0;
         $num_orphans = 0;
-        while ($row = mysql_fetch_assoc($settings_query)) {
+        foreach ($rows as $row) {
             $curr_account_id = $row["account_id"];
+
             if (!in_array($curr_account_id, $valid_account_ids)) {
                 $response["problems"][] = "Invalid account ID: $curr_account_id";
                 $num_orphans++;
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}account_settings
-              WHERE  account_id = $curr_account_id AND
-                     setting_name = '{$row["setting_name"]}'
-              LIMIT 1
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}account_settings
+                        WHERE  account_id = :account_id AND
+                               setting_name = :setting_name
+                        LIMIT 1
+                    ");
+                    $db->bindAll(array(
+                        "account_id" => $curr_account_id,
+                        "setting_name" => $row["setting_name"]
+                    ));
+                    $db->execute();
                 }
             }
+
             $num_tests++;
         }
 
@@ -218,41 +233,41 @@ class Orphans
     /**
      * Tests: theme, menu_id.
      */
-    function sc_orphan_test__accounts($remove_orphans)
+    private static function testAccounts($remove_orphans)
     {
-        global $g_table_prefix, $g_current_version, $g_cache;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks theme associated with accounts is a valid, enabled theme, and checks the menu ID of accounts exists.",
-        "problems" => array(),
-        "clean_up_problems" => array()
+            "test_descriptions" => "Checks theme associated with accounts is a valid, enabled theme, and checks the menu ID of accounts exists.",
+            "problems" => array(),
+            "clean_up_problems" => array()
         );
 
-        $query = mysql_query("
-        SELECT account_id, account_type, theme, menu_id
-        FROM   {$g_table_prefix}accounts
-      ");
+        $db->query("SELECT account_id, account_type, theme, menu_id FROM {PREFIX}accounts");
+        $db->execute();
+        $account_rows = $db->fetchAll();
 
         $valid_menu_ids = General::getMenuIds();
 
         $first_client_menu_id = "";
         if ($remove_orphans) {
-            $menu_query = mysql_query("SELECT menu_id FROM {$g_table_prefix}menus WHERE menu_type = 'client' LIMIT 1");
-            $info = mysql_fetch_assoc($menu_query);
-            if (!empty($info["menu_id"])) {
-                $first_client_menu_id = $info["menu_id"];
+            $db->query("SELECT menu_id FROM {PREFIX}menus WHERE menu_type = 'client' LIMIT 1");
+            $db->execute();
+            $menu_id = $db->fetch(PDO::FETCH_COLUMN);
+            if (!empty($menu_id)) {
+                $first_client_menu_id = $menu_id;
             }
         }
 
         // get a list of valid theme folders
-        $themes = ft_get_themes(true);
+        $themes = Themes::getList(true);
         $valid_theme_folders = array();
         foreach ($themes as $theme_info) {
             $valid_theme_folders[] = $theme_info["theme_folder"];
         }
 
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($account_rows as $row) {
             if (!in_array($row["menu_id"], $valid_menu_ids)) {
                 $response["problems"][] = "Invalid menu ID: {$row["menu_id"]}";
 
@@ -266,11 +281,16 @@ class Orphans
                     if (empty($new_menu_id)) {
                         $response["clean_up_problems"][] = "There's no client menu. Please create one, then re-run the test to fix all dud references.";
                     } else {
-                        @mysql_query("
-                UPDATE {$g_table_prefix}accounts
-                SET    menu_id = $new_menu_id
-                WHERE  account_id = {$row["account_id"]}
-              ");
+                        $db->query("
+                            UPDATE {PREFIX}accounts
+                            SET    menu_id = :menu_id,
+                            WHERE  account_id = :account_id
+                        ");
+                        $db->bindAll(array(
+                            "menu_id" => $new_menu_id,
+                            "account_id" => $row["account_id"]
+                        ));
+                        $db->execute();
                     }
                 }
             }
@@ -281,12 +301,14 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              UPDATE {$g_table_prefix}accounts
-              SET    theme = 'default',
-                     swatch = 'green'
-              WHERE  account_id = {$row["account_id"]}
-            ");
+                    $db->query("
+                        UPDATE {PREFIX}accounts
+                        SET    theme = 'default',
+                               swatch = 'green'
+                        WHERE  account_id = :account_id
+                    ");
+                    $db->bind("account_id", $row["account_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -299,13 +321,11 @@ class Orphans
     }
 
 
-    function sc_orphan_test__client_forms($remove_orphans)
+    private static function testClientForms($remove_orphans)
     {
-        global $g_table_prefix, $g_current_version, $g_cache;
-
         $response = array(
-        "test_descriptions" => "Checks for invalid account IDs and invalid form IDs.",
-        "problems" => array()
+            "test_descriptions" => "Checks for invalid account IDs and invalid form IDs.",
+            "problems" => array()
         );
 
         $query = mysql_query("SELECT * FROM {$g_table_prefix}client_forms");

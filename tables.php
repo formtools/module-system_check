@@ -70,9 +70,9 @@ $word_failed_uc  = mb_strtoupper($L["word_failed"]);
 $page_vars = array();
 $page_vars["module_list"] = General::getCompatibleModules("tables");
 $page_vars["core_version"] = Core::getVersionString();
+$page_vars["css_files"] = array("{$root_url}/modules/system_check/global/css/styles.css");
 $page_vars["head_string"] =<<< EOF
 <script src="{$root_url}/modules/system_check/global/scripts/tests.js"></script>
-<link type="text/css" rel="stylesheet" href="{$root_url}/modules/system_check/global/css/styles.css">
 <script>
 g.messages = [];
 g.messages["word_testing_c"] = "{$L["word_testing_c"]}";

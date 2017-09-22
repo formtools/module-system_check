@@ -37,4 +37,4 @@
   {$L.text_environment_overview_summary}
 </div>
 
-<textarea style="width:100%; height:220px" class="medium_grey"	>{$report_card}</textarea>
+<textarea style="width:100%; height:220px" class="medium_grey">{$report_card}</textarea>

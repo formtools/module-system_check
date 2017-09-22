@@ -32,7 +32,7 @@ class Tables
      * @param array $component_info
      * @param string $table_name
      */
-    public static function sc_check_component_table($component_info, $table_name)
+    public static function checkComponentTable($component_info, $table_name)
     {
         // first, check the table exists
         $results = array();
@@ -41,7 +41,7 @@ class Tables
 
         // if the table exists, run tests on all the columns in the table
         if ($table_exists) {
-            $info = sc_check_component_table_columns($component_info, $table_name);
+            $info = Tables::checkComponentTableColumns($component_info, $table_name);
             $results["missing_columns"] = $info["missing_columns"];
             $results["invalid_columns"] = $info["invalid_columns"];
         }
@@ -57,27 +57,31 @@ class Tables
      * @param array $component_info
      * @param string $table_name
      */
-    public static function sc_check_component_table_columns($component_info, $table_name)
+    private static function checkComponentTableColumns($component_info, $table_name)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
+        $table_prefix = Core::getDbTablePrefix();
 
         $missing_columns = array();
         $invalid_columns = array();
 
         // get the actual content of the db table (should be moved to helper)
-        $actual_column_info_query = mysql_query("SHOW COLUMNS FROM $table_name");
+        $db->query("SHOW COLUMNS FROM $table_name");
+        $db->execute();
+
         $actual_column_info = array();
-        while ($row = mysql_fetch_assoc($actual_column_info_query)) {
+        foreach ($db->fetchAll() as $row) {
             $default = preg_replace("/\\$/", "\\\\$", $row["Default"]);
             $actual_column_info[$row['Field']] = array(
-            "Type" => $row['Type'],
-            "Null" => $row['Null'],
-            "Key" => $row['Key'],
-            "Default" => $default
+                "Type" => $row['Type'],
+                "Null" => $row['Null'],
+                "Key" => $row['Key'],
+                "Default" => $default
             );
         }
 
-        $table_name_without_prefix = preg_replace("/^{$g_table_prefix}/", "", $table_name);
+        $table_name_without_prefix = preg_replace("/^{$table_prefix}/", "", $table_name);
+
         foreach ($component_info["tables"][$table_name_without_prefix] as $desired_column_info) {
             $curr_column_name = $desired_column_info["Field"];
 
@@ -92,42 +96,25 @@ class Tables
             $invalid_values = array();
             if ($desired_column_info["Type"] != $actual_column_info[$curr_column_name]["Type"]) {
                 $invalid_values = array(
-                "field" => "Type",
-                "should_be" => $desired_column_info["Type"],
-                "is" => $actual_column_info[$curr_column_name]["Type"]
+                    "field" => "Type",
+                    "should_be" => $desired_column_info["Type"],
+                    "is" => $actual_column_info[$curr_column_name]["Type"]
                 );
             }
 
             if (!empty($invalid_values)) {
                 $invalid_columns[] = array(
-                "column" => $curr_column_name,
-                "invalid_values" => $invalid_values
+                    "column" => $curr_column_name,
+                    "invalid_values" => $invalid_values
                 );
             }
         }
 
         return array(
-        "missing_columns" => $missing_columns,
-        "invalid_columns" => $invalid_columns
+            "missing_columns" => $missing_columns,
+            "invalid_columns" => $invalid_columns
         );
     }
-
-    /**
-     * Note that this function takes the FULL table name (including prefix).
-     *
-     * @param array $component_info
-     * @param string $table_name
-     */
-    public static function sc_test_component_table_exists($component_info, $table_name)
-    {
-        $exists = false;
-        if (mysql_query("SELECT * FROM {$table_name}")) {
-            $exists = true;
-        }
-
-        return $exists;
-    }
-
 
     public static function getComponentTables($component_info)
     {
