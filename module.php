@@ -8,7 +8,7 @@ $MODULE["author"]          = "Ben Keen";
 $MODULE["author_email"]    = "ben.keen@gmail.com";
 $MODULE["author_link"]     = "http://formtools.org";
 $MODULE["version"]         = "2.0.0";
-$MODULE["date"]            = "2017-06-04";
+$MODULE["date"]            = "2017-09-22";
 $MODULE["origin_language"] = "en_us";
 $MODULE["namespace"]       = "SystemCheck";
 

@@ -5,6 +5,7 @@ namespace FormTools\Modules\SystemCheck;
 
 use PDO;
 use FormTools\Core;
+use FormTools\FieldTypes;
 use FormTools\Themes;
 
 
@@ -996,18 +997,23 @@ class Orphans
 
         $valid_field_type_ids = General::getFieldTypeIds();
 
-        $query = mysql_query("SELECT rule_id, field_type_id FROM {$g_table_prefix}field_type_validation_rules");
+        $db->query("SELECT rule_id, field_type_id FROM {PREFIX}field_type_validation_rules");
+        $db->execute();
+        $rows = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["field_type_id"], $valid_field_type_ids)) {
                 $response["problems"][] = "Invalid reference to field_type_id: {$row["field_type_id"]} for rule_id: {$row["rule_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}field_type_validation_rules
-              WHERE  rule_id = {$row["rule_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}field_type_validation_rules
+                        WHERE  rule_id = :rule_id
+                    ");
+                    $db->bind("rule_id", $row["rule_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1032,18 +1038,23 @@ class Orphans
         $valid_field_ids = General::getFieldIds();
         $valid_rule_ids = General::getValidationRuleIds();
 
-        $query = mysql_query("SELECT rule_id, field_id FROM {$g_table_prefix}field_validation");
+        $db->query("SELECT rule_id, field_id FROM {PREFIX}field_validation");
+        $db->execute();
+        $rows = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["rule_id"], $valid_rule_ids)) {
                 $response["problems"][] = "Invalid reference to rule_id: {$row["rule_id"]} for field_id: {$row["field_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}field_validation
-              WHERE  rule_id = {$row["rule_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}field_validation
+                        WHERE  rule_id = :rule_id
+                    ");
+                    $db->bind("rule_id", $row["rule_id"]);
+                    $db->execute();
                 }
             }
             if (!in_array($row["field_id"], $valid_field_ids)) {
@@ -1051,10 +1062,12 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}field_validation
-              WHERE  rule_id = {$row["rule_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}field_validation
+                        WHERE  rule_id = :rule_id
+                    ");
+                    $db->bind("rule_id", $row["rule_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1077,18 +1090,23 @@ class Orphans
         );
 
         $valid_form_ids = General::getFormIds();
-        $query = mysql_query("SELECT * FROM {PREFIX}form_email_fields");
+        $db->query("SELECT * FROM {PREFIX}form_email_fields");
+        $db->execute();
+        $rows = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["form_id"], $valid_form_ids)) {
                 $response["problems"][] = "Invalid reference to form_id {$row["form_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}form_email_fields
-              WHERE  form_email_id = {$row["form_email_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}form_email_fields
+                        WHERE  form_email_id = :form_email_id
+                    ");
+                    $db->bind("form_email_id", $row["form_email_id"]);
+                    $db->execute();
                 }
             } else {
                 $form_field_ids = General::getFormFieldIds($row["form_id"]);
@@ -1097,10 +1115,12 @@ class Orphans
 
                     // clean-up code
                     if ($remove_orphans) {
-                        @mysql_query("
-                DELETE FROM {$g_table_prefix}form_email_fields
-                WHERE  form_email_id = {$row["form_email_id"]}
-              ");
+                        $db->query("
+                            DELETE FROM {PREFIX}form_email_fields
+                            WHERE  form_email_id = :form_email_id
+                        ");
+                        $db->bind("form_email_id", $row["form_email_id"]);
+                        $db->execute();
                     }
                 }
                 if (!empty($row["first_name_field_id"]) && !in_array($row["first_name_field_id"], $form_field_ids)) {
@@ -1108,11 +1128,13 @@ class Orphans
 
                     // clean-up code
                     if ($remove_orphans) {
-                        @mysql_query("
-                UPDATE {$g_table_prefix}form_email_fields
-                SET    first_name_field_id = NULL
-                WHERE  form_email_id = {$row["form_email_id"]}
-              ");
+                        $db->query("
+                            UPDATE {PREFIX}form_email_fields
+                            SET    first_name_field_id = NULL
+                            WHERE  form_email_id = :form_email_id
+                        ");
+                        $db->bind("form_email_id", $row["form_email_id"]);
+                        $db->execute();
                     }
                 }
                 if (!empty($row["last_name_field_id"]) && !in_array($row["last_name_field_id"], $form_field_ids)) {
@@ -1120,11 +1142,13 @@ class Orphans
 
                     // clean-up code
                     if ($remove_orphans) {
-                        @mysql_query("
-                UPDATE {$g_table_prefix}form_email_fields
-                SET    last_name_field_id = NULL
-                WHERE  form_email_id = {$row["form_email_id"]}
-              ");
+                        $db->query("
+                            UPDATE {PREFIX}form_email_fields
+                            SET    last_name_field_id = NULL
+                            WHERE  form_email_id = :form_email_id
+                        ");
+                        $db->bind("form_email_id", $row["form_email_id"]);
+                        $db->execute();
                     }
                 }
                 $num_tests += 3;
@@ -1151,20 +1175,24 @@ class Orphans
         $valid_form_ids = General::getFormIds();
         $valid_field_type_ids = General::getFieldTypeIds();
 
-        $query = mysql_query("SELECT field_id, form_id, field_type_id FROM {$g_table_prefix}form_fields");
+        $db->query("SELECT field_id, form_id, field_type_id FROM {PREFIX}form_fields");
+        $db->execute();
+        $form_fields = $db->fetchAll();
 
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($form_fields as $row) {
             if (!in_array($row["form_id"], $valid_form_ids)) {
                 $response["problems"][] = "Invalid reference to form_id {$row["form_id"]} for field_id {$row["field_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}form_fields
-              WHERE field_id = {$row["field_id"]}
-              LIMIT 1
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}form_fields
+                        WHERE field_id = :field_id
+                        LIMIT 1
+                    ");
+                    $db->bind("field_id", $row["field_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1174,12 +1202,17 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    $textbox_field_type_id = ft_get_field_type_id_by_identifier("textbox");
-                    @mysql_query("
-              UPDATE {$g_table_prefix}form_fields
-              SET    field_type_id = $textbox_field_type_id
-              WHERE  field_id = {$row["field_id"]}
-            ");
+                    $textbox_field_type_id = FieldTypes::getFieldTypeIdByIdentifier("textbox");
+                    $db->query("
+                        UPDATE {PREFIX}form_fields
+                        SET    field_type_id = :field_type_id
+                        WHERE  field_id = :field_id
+                    ");
+                    $db->bindAll(array(
+                        "field_type_id" => $textbox_field_type_id,
+                        "field_id" => $row["field_id"]
+                    ));
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1197,24 +1230,29 @@ class Orphans
         $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for menu item records that are mapped to invalid menus",
-        "problems" => array()
+            "test_descriptions" => "Checks for menu item records that are mapped to invalid menus",
+            "problems" => array()
         );
 
         $valid_menu_ids = General::getMenuIds();
 
-        $query = mysql_query("SELECT menu_id, menu_item_id FROM {$g_table_prefix}menu_items");
+        $db->query("SELECT menu_id, menu_item_id FROM {PREFIX}menu_items");
+        $db->execute();
+        $menu_items = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($menu_items as $row) {
             if (!in_array($row["menu_id"], $valid_menu_ids)) {
                 $response["problems"][] = "Invalid reference to menu_id {$row["menu_id"]} for menu_item_id {$row["menu_item_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}menu_items
-              WHERE  menu_item_id = {$row["menu_item_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}menu_items
+                        WHERE  menu_item_id = :menu_item_id
+                    ");
+                    $db->bind("menu_item_id", $row["menu_item_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1238,18 +1276,23 @@ class Orphans
 
         $valid_form_ids = General::getFormIds();
 
-        $query = mysql_query("SELECT form_id, page_num FROM {$g_table_prefix}multi_page_form_urls");
+        $db->query("SELECT form_id, page_num FROM {PREFIX}multi_page_form_urls");
+        $db->execute();
+        $rows = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["form_id"], $valid_form_ids)) {
                 $response["problems"][] = "Invalid reference to form_id {$row["form_id"]} for page_num {$row["page_num"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}multi_page_form_urls
-              WHERE  form_id = {$row["form_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}multi_page_form_urls
+                        WHERE  form_id = :form_id
+                    ");
+                    $db->bind("form_id", $row["form_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1274,18 +1317,23 @@ class Orphans
         $valid_view_ids = General::getViewIds();
         $valid_field_ids = General::getFieldIds();
 
-        $query = mysql_query("SELECT view_id, field_id FROM {$g_table_prefix}new_view_submission_defaults");
+        $db->query("SELECT view_id, field_id FROM {PREFIX}new_view_submission_defaults");
+        $db->execute();
+        $rows = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["view_id"], $valid_view_ids)) {
                 $response["problems"][] = "Invalid reference to view_id {$row["view_id"]} for field_id {$row["field_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}new_view_submission_defaults
-              WHERE  view_id = {$row["view_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}new_view_submission_defaults
+                        WHERE  view_id = :view_id
+                    ");
+                    $db->bind("view_id", $row["view_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1295,10 +1343,12 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}new_view_submission_defaults
-              WHERE  field_id = {$row["field_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}new_view_submission_defaults
+                        WHERE  field_id = {$row["field_id"]}
+                    ");
+                    $db->bind("view_id", $row["view_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1323,18 +1373,23 @@ class Orphans
         $valid_form_ids = General::getFormIds();
         $valid_account_ids = General::getAccountIds();
 
-        $query = mysql_query("SELECT * FROM {PREFIX}public_form_omit_list");
+        $db->query("SELECT * FROM {PREFIX}public_form_omit_list");
+        $db->execute();
+        $rows = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["form_id"], $valid_form_ids)) {
                 $response["problems"][] = "Invalid reference to form_id {$row["form_id"]} for account_id {$row["account_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
+                    $db->query("
                         DELETE FROM {PREFIX}public_form_omit_list
-                        WHERE  form_id = {$row["form_id"]}
+                        WHERE  form_id = :form_id
                     ");
+                    $db->bind("form_id", $row["form_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1344,10 +1399,12 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
+                    $db->query("
                         DELETE FROM {PREFIX}public_form_omit_list
-                        WHERE  account_id = {$row["account_id"]}
+                        WHERE  account_id = :account_id
                     ");
+                    $db->bind("account_id", $row["account_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1372,18 +1429,23 @@ class Orphans
         $valid_view_ids = General::getViewIds();
         $valid_account_ids = General::getAccountIds();
 
-        $query = mysql_query("SELECT * FROM {PREFIX}public_view_omit_list");
+        $db->query("SELECT * FROM {PREFIX}public_view_omit_list");
+        $db->execute();
+        $rows = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($rows as $row) {
             if (!in_array($row["view_id"], $valid_view_ids)) {
                 $response["problems"][] = "Invalid reference to view_id {$row["view_id"]} for account_id {$row["account_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}public_view_omit_list
-              WHERE  view_id = {$row["view_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}public_view_omit_list
+                        WHERE  view_id = :view_id
+                    ");
+                    $db->bind("view_id", $row["view_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1393,10 +1455,12 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}public_view_omit_list
-              WHERE  account_id = {$row["account_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}public_view_omit_list
+                        WHERE  account_id = :account_id
+                    ");
+                    $db->bind("account_id", $row["account_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1420,18 +1484,23 @@ class Orphans
 
         $valid_form_ids = General::getFormIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}views");
+        $db->query("SELECT * FROM {PREFIX}views");
+        $db->execute();
+        $views = $db->fetchAll();
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+
+        foreach ($views as $row) {
             if (!in_array($row["form_id"], $valid_form_ids)) {
                 $response["problems"][] = "Invalid reference to form_id {$row["form_id"]} for view_id {$row["view_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}views
-              WHERE  form_id = {$row["form_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}views
+                        WHERE  form_id = :form_id
+                    ");
+                    $db->bind("form_id", $row["form_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1456,18 +1525,23 @@ class Orphans
         $valid_view_ids = General::getViewIds();
         $valid_field_ids = General::getFieldIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}view_columns");
+        $db->query("SELECT * FROM {PREFIX}view_columns");
+        $db->execute();
+        $view_columns = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($view_columns as $row) {
             if (!in_array($row["view_id"], $valid_view_ids)) {
                 $response["problems"][] = "Invalid reference to view_id {$row["view_id"]} for field_id {$row["field_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}view_columns
-              WHERE  view_id = {$row["view_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}view_columns
+                        WHERE  view_id = :view_id
+                    ");
+                    $db->bind("view_id", $row["view_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1477,10 +1551,12 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}view_columns
-              WHERE  field_id = {$row["field_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}view_columns
+                        WHERE  field_id = :field_id
+                    ");
+                    $db->bind("field_id", $row["field_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1495,28 +1571,33 @@ class Orphans
 
     private static function testViewFields($remove_orphans)
     {
-        global $g_table_prefix;
+        $db = Core::$db;
 
         $response = array(
-        "test_descriptions" => "Checks for references to non-existent View IDs and field IDs",
-        "problems" => array()
+            "test_descriptions" => "Checks for references to non-existent View IDs and field IDs",
+            "problems" => array()
         );
 
         $valid_view_ids = General::getViewIds();
         $valid_field_ids = General::getFieldIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}view_fields");
+        $db->query("SELECT * FROM {PREFIX}view_fields");
+        $db->execute();
+        $view_fields = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($view_fields as $row) {
             if (!in_array($row["view_id"], $valid_view_ids)) {
                 $response["problems"][] = "Invalid reference to view_id {$row["view_id"]} for field_id {$row["field_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}view_fields
-              WHERE  view_id = {$row["view_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}view_fields
+                        WHERE  view_id = :view_id
+                    ");
+                    $db->bind("view_id", $row["view_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1526,10 +1607,12 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
-              DELETE FROM {$g_table_prefix}view_fields
-              WHERE  field_id = {$row["field_id"]}
-            ");
+                    $db->query("
+                        DELETE FROM {PREFIX}view_fields
+                        WHERE  field_id = :field_id
+                    ");
+                    $db->bind("field_id", $row["field_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1554,18 +1637,23 @@ class Orphans
         $valid_view_ids = General::getViewIds();
         $valid_field_ids = General::getFieldIds();
 
-        $query = mysql_query("SELECT * FROM {PREFIX}view_filters");
+        $db->query("SELECT * FROM {PREFIX}view_filters");
+        $db->execute();
+        $view_filters = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($view_filters as $row) {
             if (!in_array($row["view_id"], $valid_view_ids)) {
                 $response["problems"][] = "Invalid reference to view_id {$row["view_id"]} for field_id {$row["field_id"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
+                    $db->query("
                         DELETE FROM {PREFIX}view_filters
-                        WHERE  view_id = {$row["view_id"]}
+                        WHERE  view_id = :view_id
                     ");
+                    $db->bind("view_id", $row["view_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1575,10 +1663,12 @@ class Orphans
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
+                    $db->query("
                         DELETE FROM {PREFIX}view_filters
-                        WHERE  field_id = {$row["field_id"]}
+                        WHERE  field_id = :field_id
                     ");
+                    $db->bind("field_id", $row["field_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;
@@ -1602,18 +1692,23 @@ class Orphans
 
         $valid_view_ids = General::getViewIds();
 
-        $query = mysql_query("SELECT * FROM {$g_table_prefix}view_tabs");
+        $db->query("SELECT * FROM {PREFIX}view_tabs");
+        $db->execute();
+        $view_tabs = $db->fetchAll();
+
         $num_tests = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        foreach ($view_tabs as $row) {
             if (!in_array($row["view_id"], $valid_view_ids)) {
                 $response["problems"][] = "Invalid reference to view_id {$row["view_id"]} for tab_number {$row["tab_number"]}";
 
                 // clean-up code
                 if ($remove_orphans) {
-                    @mysql_query("
+                    $db->query("
                         DELETE FROM {PREFIX}view_tabs
-                        WHERE  view_id = {$row["view_id"]}
+                        WHERE  view_id = :view_id
                     ");
+                    $db->bind("view_id", $row["view_id"]);
+                    $db->execute();
                 }
             }
             $num_tests++;

@@ -28,8 +28,8 @@ class Generation
 
         $html = <<< EOF
     $init_str
-    \$STRUCTURE$version_str = array();
-    \$STRUCTURE{$version_str}["tables"] = array();
+\$STRUCTURE$version_str = array();
+\$STRUCTURE{$version_str}["tables"] = array();
 
 EOF;
 
@@ -44,13 +44,13 @@ EOF;
             foreach ($info as $row) {
                 $default = preg_replace("/\\$/", "\\\\$", $row["Default"]);
                 $str = <<< EOF
-      array(
+    array(
         "Field"   => "{$row['Field']}",
         "Type"    => "{$row['Type']}",
         "Null"    => "{$row['Null']}",
         "Key"     => "{$row['Key']}",
         "Default" => "{$default}"
-      )
+    )
 EOF;
                 $rows[] = $str;
             }
@@ -79,13 +79,13 @@ EOF;
         $hooks = array();
         foreach ($db->fetchAll() as $row) {
             $hooks[] = <<< END
-      array(
+    array(
         "hook_type"       => "{$row["hook_type"]}",
         "action_location" => "{$row["action_location"]}",
         "function_name"   => "{$row["function_name"]}",
         "hook_function"   => "{$row["hook_function"]}",
         "priority"        => "{$row["priority"]}"
-      )
+    )
 END;
         }
         $hooks_str = implode(",\n", $hooks);
@@ -97,6 +97,23 @@ END;
         . $hooks_str
         . "\n);";
 
+        echo $php;
+    }
+
+    /*
+     * Generates a list of files for the current repo - as determined by the folder path passed (assumes to be
+     * in a git repo).
+     */
+    public static function getRepoFiles($folder)
+    {
+        exec("cd $folder; git ls-files", $files);
+
+        $rows = array();
+        foreach ($files as $file) {
+            $rows [] = "    \"{$file}\"";
+        }
+
+        $php = "\$FILES = array(\n" . implode($rows, ",\n") . "\n);";
         echo $php;
     }
 }

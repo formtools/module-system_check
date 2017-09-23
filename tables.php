@@ -6,6 +6,7 @@ use FormTools\Core;
 use FormTools\Modules;
 use FormTools\Themes;
 use FormTools\Modules\SystemCheck\General;
+use FormTools\Modules\SystemCheck\Generation;
 
 Core::init();
 Core::$user->checkAuth("admin");
@@ -14,54 +15,10 @@ $L = Modules::getModuleLangFile("system_check", Core::$user->getLang());
 
 $root_url = Core::getRootUrl();
 
-// ---------------------------------------
-// *** example for generating config file for a module. Make sure you omit the table prefixes! ***
-/*$tables = array(
-  "account_settings",
-  "accounts",
-  "client_forms",
-  "client_views",
-  "email_template_edit_submission_views",
-  "email_template_recipients",
-  "email_templates",
-  "field_options",
-  "field_settings",
-  "field_type_setting_options",
-  "field_type_settings",
-  "field_types",
-  "form_email_fields",
-  "form_fields",
-  "forms",
-  "hooks",
-  "list_groups",
-  "menu_items",
-  "menus",
-  "module_js_error_logs",
-  "module_menu_items",
-  "modules",
-  "multi_page_form_urls",
-  "new_view_submission_defaults",
-  "option_lists",
-  "public_form_omit_list",
-  "public_view_omit_list",
-  "sessions",
-  "settings",
-  "themes",
-  "view_columns",
-  "view_fields",
-  "view_filters",
-  "view_tabs",
-  "views"
-);
-*/
-$tables = array("module_hooks_manager_rules");
-//echo sc_generate_db_config_file($tables, "module");
-//exit;
-
-// ---------------------------------------
-
-// example for the core
-//echo sc_generate_db_config_file($tables, "core, "2.0.4");
+// $tables: array of table names without prefix
+//echo Generation::generateDbConfigFile(Core::getCoreTables()); // Core
+//echo sc_generate_db_config_file($tables, "module"); // Module
+////exit;
 
 $word_testing_uc = mb_strtoupper($L["word_untested"]);
 $word_passed_uc  = mb_strtoupper($L["word_passed"]);
