@@ -4,14 +4,11 @@ require_once("../../global/library.php");
 
 use FormTools\Core;
 use FormTools\Modules;
-use FormTools\Themes;
 use FormTools\Modules\SystemCheck\General;
 use FormTools\Modules\SystemCheck\Hooks;
 
-Core::init();
-Core::$user->checkAuth("admin");
-Modules::initModulePage();
-$L = Modules::getModuleLangFile("system_check", Core::$user->getLang());
+$module = Modules::initModulePage("admin");
+$L = $module->getLangStrings();
 $root_url = Core::getRootUrl();
 
 if (isset($_GET["repair"])) {
@@ -30,10 +27,7 @@ $notify_hook_verification_complete_problems = addcslashes($L["notify_hook_verifi
 
 $page_vars = array();
 $page_vars["module_list"] = General::getCompatibleModules("hooks");
-$page_vars["css_files"] = array("{$root_url}/modules/system_check/global/css/styles.css");
-$page_vars["head_string"] =<<< EOF
-<script src="{$root_url}/modules/system_check/global/scripts/tests.js"></script>
-<script>
+$page_vars["head_js"] =<<< EOF
 g.messages = [];
 g.messages["word_testing_c"] = "{$L["word_testing_c"]}";
 g.messages["word_untested"] = "$word_testing_uc";
@@ -56,7 +50,6 @@ $(function() {
     window.location = "hooks.php?repair=" + sc_ns.hook_verification_failed_module_ids.toString();
   });
 });
-</script>
 EOF;
 
-Themes::displayModulePage("templates/hooks.tpl", $page_vars);
+$module->displayPage("templates/hooks.tpl", $page_vars);

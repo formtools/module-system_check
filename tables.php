@@ -4,18 +4,14 @@ require_once("../../global/library.php");
 
 use FormTools\Core;
 use FormTools\Modules;
-use FormTools\Themes;
 use FormTools\Modules\SystemCheck\General;
-use FormTools\Modules\SystemCheck\Generation;
 
-Core::init();
-Core::$user->checkAuth("admin");
-Modules::initModulePage();
-$L = Modules::getModuleLangFile("system_check", Core::$user->getLang());
-
+$module = Modules::initModulePage("admin");
+$L = $module->getLangStrings();
 $root_url = Core::getRootUrl();
 
 // $tables: array of table names without prefix
+//use FormTools\Modules\SystemCheck\Generation;
 //echo Generation::generateDbConfigFile(Core::getCoreTables()); // Core
 //echo sc_generate_db_config_file($tables, "module"); // Module
 ////exit;
@@ -27,10 +23,7 @@ $word_failed_uc  = mb_strtoupper($L["word_failed"]);
 $page_vars = array();
 $page_vars["module_list"] = General::getCompatibleModules("tables");
 $page_vars["core_version"] = Core::getVersionString();
-$page_vars["css_files"] = array("{$root_url}/modules/system_check/global/css/styles.css");
-$page_vars["head_string"] =<<< EOF
-<script src="{$root_url}/modules/system_check/global/scripts/tests.js"></script>
-<script>
+$page_vars["head_js"] =<<< EOF
 g.messages = [];
 g.messages["word_testing_c"] = "{$L["word_testing_c"]}";
 g.messages["word_untested"] = "$word_testing_uc";
@@ -47,7 +40,6 @@ g.messages["validation_no_components_selected"] = "{$L["validation_no_components
 
 var loading = new Image();
 loading.src = "$root_url/modules/system_check/images/loading.gif";
-</script>
 EOF;
 
-Themes::displayModulePage("templates/tables.tpl", $page_vars);
+$module->displayPage("templates/tables.tpl", $page_vars);

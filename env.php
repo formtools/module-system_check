@@ -6,10 +6,8 @@ use FormTools\Core;
 use FormTools\General;
 use FormTools\Modules;
 
-Core::init();
-Core::$user->checkAuth("admin");
-Modules::initModulePage();
-$L = Modules::getModuleLangFile("system_check", Core::$user->getLang());
+$module = Modules::initModulePage("admin");
+$L = $module->getLangStrings();
 
 $page = Modules::loadModuleField("system_check", "page", "page", "summary");
 $root_url = Core::getRootUrl();

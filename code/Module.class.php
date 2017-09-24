@@ -1,0 +1,32 @@
+<?php
+
+namespace FormTools\Modules\SystemCheck;
+
+
+use FormTools\Module as FormToolsModule;
+
+
+class Module extends FormToolsModule
+{
+    // required properties
+    protected $moduleName = "System Check";
+    protected $author = "Ben Keen";
+    protected $authorEmail = "ben.keen@gmail.com";
+    protected $authorLink = "http://formtools.org";
+    protected $version = "2.1.0";
+    protected $date = "2017-09-23";
+    protected $originLanguage = "en_us";
+
+    protected $jsFiles = array("scripts/tests.js");
+    protected $cssFiles = array("css/styles.css");
+
+    protected $nav = array(
+        "module_name"               => array("index.php", false),
+        "phrase_file_verification"  => array("files.php", true),
+        "phrase_table_verification" => array("tables.php", true),
+        "phrase_hook_verification"  => array("hooks.php", true),
+        "phrase_orphan_clean_up"    => array("orphans.php", true),
+        "phrase_environment_info"   => array("env.php", false),
+        "word_help"                 => array("help.php", false)
+    );
+}
