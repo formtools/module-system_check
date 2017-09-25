@@ -2,10 +2,6 @@
 
 require_once("../../global/library.php");
 
-use FormTools\Modules;
-use FormTools\Themes;
+$module = FormTools\Modules::initModulePage("admin");
 
-$module = Modules::initModule("admin");
-$L = $module->getLangStrings();
-
-Themes::displayModulePage("templates/help.tpl", array());
+$module->displayPage("templates/help.tpl", array());

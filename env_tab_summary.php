@@ -1,5 +1,6 @@
 <?php
 
+use FormTools\Core;
 use FormTools\Modules;
 use FormTools\Settings;
 use FormTools\Themes;
@@ -7,7 +8,7 @@ use FormTools\Themes;
 $settings = Settings::get();
 
 $php_version = PHP_VERSION;
-$mysql_version = ""; // mysql_get_server_info(); TODO
+$mysql_version = Core::$db->getMysQLVersion();
 $suhosin_installed   = (extension_loaded("suhosin")) ? $L["word_installed"] : $L["phrase_not_installed"];
 $sessions_available  = (extension_loaded("session")) ? $L["word_available"] : $L["phrase_not_available"];
 $curl_available      = (extension_loaded("curl")) ? $L["word_available"] : $L["phrase_not_available"];
@@ -57,4 +58,4 @@ END;
 
 $page_vars["report_card"] = $report_card;
 
-Themes::displayModulePage("templates/env.tpl", $page_vars);
+$module->displayPage("templates/env.tpl", $page_vars);

@@ -8,15 +8,14 @@ use FormTools\Module as FormToolsModule;
 
 class Module extends FormToolsModule
 {
-    // required properties
     protected $moduleName = "System Check";
+    protected $moduleDesc = "This module offers a few tests to analyze and repair your Form Tools installation.";
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "http://formtools.org";
     protected $version = "2.1.0";
-    protected $date = "2017-09-23";
+    protected $date = "2017-09-24";
     protected $originLanguage = "en_us";
-
     protected $jsFiles = array("scripts/tests.js");
     protected $cssFiles = array("css/styles.css");
 

@@ -26,18 +26,11 @@ $page_vars = array(
             "tab_link" => "{$same_page}?page=phpinfo",
             "pages" => array("phpinfo")
         )
-    ),
-    "css_files" => array("{$root_url}/modules/system_check/global/css/styles.css")
+    )
 );
 
-switch ($page) {
-    case "summary":
-        require_once("env_tab_summary.php");
-        break;
-    case "phpinfo":
-        require_once("env_tab_phpinfo.php");
-        break;
-    default:
-        require_once("env_tab_summary.php");
-        break;
+if ($page === "phpinfo") {
+    $module->displayPage("templates/env.tpl", $page_vars);
+} else {
+    require_once("env_tab_summary.php");
 }
