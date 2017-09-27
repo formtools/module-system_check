@@ -39,11 +39,13 @@
 	    <th>{$LANG.word_version}</th>
 	    <th>{$L.word_result}</th>
 	  </tr>
+      {assign var=has_one_enabled value=false}
 	  {foreach from=$module_list item=module_info}
 	  {assign var=has_hooks value=$module_info.module_config.hooks|@count}
 	  <tr {if !$has_hooks}class="no_test"{/if}>
 	    <td align="center">
 	      {if $has_hooks}
+            {assign var=has_one_enabled value=true}
 	        <input type="checkbox" class="components" value="{$module_info.module_id}" checked="checked" />
 	      {/if}
 	    </td>
@@ -67,6 +69,7 @@
 	  {/foreach}
 	  </table>
 
+      {if $has_one_enabled}
 	  <p>
 	    <input type="button" value="{$L.phrase_test_selected_components}" onclick="sc_ns.start(sc_ns.init_component_hook_test)" />
 	  </p>
@@ -85,7 +88,7 @@
 		  </td>
 		</tr>
 		</table>
-
+      {/if}
   {/if}
 
 {include file='modules_footer.tpl'}

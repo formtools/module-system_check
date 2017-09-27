@@ -12,9 +12,10 @@ $root_url = Core::getRootUrl();
 
 // $tables: array of table names without prefix
 //use FormTools\Modules\SystemCheck\Generation;
-//echo Generation::generateDbConfigFile(Core::getCoreTables()); // Core
-//echo sc_generate_db_config_file($tables, "module"); // Module
-////exit;
+//$tables = array("module_pages", "module_pages_clients");
+////echo Generation::generateDbConfigFile(Core::getCoreTables()); // Core
+//echo Generation::generateDbConfigFile($tables, "module"); // Core
+//exit;
 
 $word_testing_uc = mb_strtoupper($L["word_untested"]);
 $word_passed_uc  = mb_strtoupper($L["word_passed"]);

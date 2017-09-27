@@ -92,11 +92,6 @@ class General
         if (is_file("$root_dir/modules/$module_folder/module_config.php")) {
             $is_compatible = true;
             require_once("$root_dir/modules/$module_folder/module_config.php");
-        } else {
-            if (is_file("$root_dir/modules/$module_folder/database_integrity.php")) {
-                $is_compatible = true;
-                require_once("$root_dir/modules/$module_folder/database_integrity.php");
-            }
         }
 
         $return_info = array(
