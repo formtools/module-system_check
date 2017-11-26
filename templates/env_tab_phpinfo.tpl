@@ -1,4 +1,4 @@
-{include file="messages.tpl"}
+{ft_include file="messages.tpl"}
 
 <div class="subtitle underline margin_bottom">PHPINFO</div>
 
