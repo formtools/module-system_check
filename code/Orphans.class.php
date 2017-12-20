@@ -1026,6 +1026,13 @@ class Orphans
     }
 
 
+    /**
+     * N.B. The field_validation table has a composite primary key of rule_id and field_id. rule_id is just an integer
+     * from 1-N, where N is the number of validation rules for the field type. So this test just looks for and clears out
+     * invalid field IDs - rule IDs are neither here nor there.
+     * @param $remove_orphans
+     * @return array
+     */
     private static function testFieldValidation($remove_orphans)
     {
         $db = Core::$db;
@@ -1036,7 +1043,6 @@ class Orphans
         );
 
         $valid_field_ids = General::getFieldIds();
-        $valid_rule_ids = General::getValidationRuleIds();
 
         $db->query("SELECT rule_id, field_id FROM {PREFIX}field_validation");
         $db->execute();
@@ -1044,19 +1050,6 @@ class Orphans
 
         $num_tests = 0;
         foreach ($rows as $row) {
-            if (!in_array($row["rule_id"], $valid_rule_ids)) {
-                $response["problems"][] = "Invalid reference to rule_id: {$row["rule_id"]} for field_id: {$row["field_id"]}";
-
-                // clean-up code
-                if ($remove_orphans) {
-                    $db->query("
-                        DELETE FROM {PREFIX}field_validation
-                        WHERE  rule_id = :rule_id
-                    ");
-                    $db->bind("rule_id", $row["rule_id"]);
-                    $db->execute();
-                }
-            }
             if (!in_array($row["field_id"], $valid_field_ids)) {
                 $response["problems"][] = "Invalid reference to field_id: {$row["field_id"]} for rule_id: {$row["rule_id"]}";
 
@@ -1064,9 +1057,9 @@ class Orphans
                 if ($remove_orphans) {
                     $db->query("
                         DELETE FROM {PREFIX}field_validation
-                        WHERE  rule_id = :rule_id
+                        WHERE  field_id = :field_id
                     ");
-                    $db->bind("rule_id", $row["rule_id"]);
+                    $db->bind("field_id", $row["field_id"]);
                     $db->execute();
                 }
             }

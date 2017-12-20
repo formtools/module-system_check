@@ -234,15 +234,6 @@ class General
     }
 
 
-    public static function getValidationRuleIds()
-    {
-        $db = Core::$db;
-        $db->query("SELECT rule_id FROM {PREFIX}field_type_validation_rules");
-        $db->execute();
-        return $db->fetchAll(PDO::FETCH_COLUMN);
-    }
-
-
     public static function getFormFieldIds($form_id)
     {
         $db = Core::$db;

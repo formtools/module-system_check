@@ -44,6 +44,7 @@ class Hooks
 
         $actual_num_hooks = $db->numRows();
 
+        $extra_info = "";
         $result = "pass";
         if ($actual_num_hooks < $expected_num_hooks) {
             $result = "missing_hooks";
@@ -86,13 +87,14 @@ class Hooks
 
                     if (!$found) {
                         $result = "invalid_hooks";
+                        $extra_info = "[missing: $hook_type,$action_location,$function_name,$hook_function,$priority]";
                         break;
                     }
                 }
             }
         }
 
-        return $result;
+        return array($result, $extra_info);
     }
 
 

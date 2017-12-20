@@ -71,13 +71,14 @@ switch ($action) {
         $module_info   = Modules::getModule($module_id);
         $module_folder  = $module_info["module_folder"];
         $module_version = $module_info["version"];
-        $result = Hooks::verifyModuleHooks($module_folder);
+        list ($result, $extra_info) = Hooks::verifyModuleHooks($module_folder);
 
         echo json_encode(array(
             "module_id" => $module_id,
             "module_folder" => $module_folder,
             "module_name" => $module_info["module_name"],
-            "result" => $result
+            "result" => $result,
+            "extra" => $extra_info
         ));
         break;
 
