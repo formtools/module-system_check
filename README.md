@@ -5,9 +5,12 @@ installation: kind of like taking your car to get it serviced.
 
 ### Documentation
 
-[https://docs.formtools.org/modules/system_check/](https://docs.formtools.org/modules/system_check/)
+- [https://docs.formtools.org/modules/system_check/](https://docs.formtools.org/modules/system_check/)
 
-### Form Tools Extensions
 
-For a full list of Form Tools modules, see: 
-[https://modules.formtools.org/](https://modules.formtools.org/)
+### Other Links
+
+- [Available Form Tools modules](https://modules.formtools.org/)
+- [About Form Tools modules](https://docs.formtools.org/userdoc/modules/) 
+- [Installation instructions](https://docs.formtools.org/userdoc/modules/installing/)
+- [Upgrading](https://docs.formtools.org/userdoc/modules/upgrading/)
