@@ -66,7 +66,7 @@ class Tables
         $invalid_columns = array();
 
         // get the actual content of the db table (should be moved to helper)
-        $db->query("SHOW COLUMNS FROM $table_name");
+        $db->query("SHOW COLUMNS FROM `$table_name`");
         $db->execute();
 
         $actual_column_info = array();
