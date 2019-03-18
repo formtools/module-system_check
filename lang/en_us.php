@@ -18,6 +18,7 @@ $L["word_available"] = "Available";
 
 $L["phrase_missing_table_c"] = "missing table: ";
 $L["phrase_missing_column_c"] = "missing column: ";
+$L["phrase_mysql_version"] = "MySQL Version";
 $L["phrase_table_looks_good_c"] = "Table and columns look good: ";
 $L["phrase_invalid_column_c"] = "Invalid column: ";
 $L["phrase_full_logs"] = "Full Logs";

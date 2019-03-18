@@ -8,7 +8,7 @@
   <td class="medium_grey">{$env_info.php_version}</td>
 </tr>
 <tr>
-  <td>{$LANG.phrase_mysql_version}</td>
+  <td>{$L.phrase_mysql_version}</td>
   <td class="medium_grey">{$env_info.mysql_version}</td>
 </tr>
 <tr>
