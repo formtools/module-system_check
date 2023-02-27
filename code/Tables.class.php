@@ -121,7 +121,7 @@ class Tables
         $dbPrefix = Core::getDbTablePrefix();
 
         $tables = array();
-        while (list($table_name) = each($component_info["tables"])) {
+        foreach ($component_info["tables"] as $table_name => $empty) {
             $tables[] = "{$dbPrefix}{$table_name}";
         }
 
